@@ -1,7 +1,7 @@
 /**
- * Morph default theme (§2). Every colour is a CSS variable under
- * `.morph-root`, so the host app can override any of them, and the
- * provider maps shadcn/ui variables onto them when present (MO-514).
+ * Morph default theme (§2). Every colour, corner and font is a CSS variable
+ * under `.morph-root`, so the host app can override any of them, and the
+ * provider maps the host page's own theme onto them (theme.ts, MO-514).
  * Light mode only. Green is the semantic "good" state, never decoration.
  */
 export const MORPH_CSS = /* css */ `
@@ -12,7 +12,9 @@ export const MORPH_CSS = /* css */ `
   --morph-good:#12805c;--morph-good-soft:#e7f6ef;
   --morph-warn:#b5660b;--morph-warn-soft:#fdf3e4;
   --morph-bad:#c2392f;--morph-bad-soft:#fdeceb;
-  --morph-radius:8px;--morph-radius-lg:12px;
+  --morph-accent-text:var(--morph-accent);--morph-focus:var(--morph-accent);
+  --morph-series-2:#cfd6e0;--morph-bar-radius:4px;--morph-th-bg:var(--morph-sunken);--morph-th-line:var(--morph-line);
+  --morph-radius:8px;--morph-radius-lg:12px;--morph-radius-control:var(--morph-radius);--morph-radius-modal:16px;
   --morph-shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.06);
   --morph-shadow-modal:0 12px 32px -8px rgba(16,24,40,.14);
   --morph-sans:Geist,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -36,7 +38,7 @@ export const MORPH_CSS = /* css */ `
 .morph-panel-foot{padding:10px 18px;border-top:1px solid var(--morph-line);font-size:12.5px;color:var(--morph-muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .morph-controls{display:flex;gap:8px;flex-wrap:wrap}
 
-.morph-btn{appearance:none;font:inherit;font-size:13px;font-weight:500;min-height:32px;min-width:24px;padding:5px 12px;border-radius:var(--morph-radius);border:1px solid var(--morph-line);background:var(--morph-surface);color:var(--morph-ink);cursor:pointer;transition:background var(--morph-fast),border-color var(--morph-fast);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.morph-btn{appearance:none;font:inherit;font-size:13px;font-weight:500;min-height:32px;min-width:24px;padding:5px 12px;border-radius:var(--morph-radius-control);border:1px solid var(--morph-line);background:var(--morph-surface);color:var(--morph-ink);cursor:pointer;transition:background var(--morph-fast),border-color var(--morph-fast);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .morph-btn:hover{background:var(--morph-sunken)}
 .morph-btn:disabled{opacity:.55;cursor:not-allowed}
 .morph-btn.primary{background:var(--morph-accent);border-color:var(--morph-accent);color:var(--morph-accent-ink)}
@@ -44,24 +46,24 @@ export const MORPH_CSS = /* css */ `
 .morph-btn.ghost{border-color:transparent;background:transparent}
 .morph-btn.ghost:hover{background:var(--morph-sunken)}
 .morph-btn.sm{min-height:28px;padding:3px 10px;font-size:12.5px}
-.morph-root :focus-visible{outline:2px solid var(--morph-accent);outline-offset:2px}
+.morph-root :focus-visible{outline:2px solid var(--morph-focus);outline-offset:2px}
 
 .morph-badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--morph-sunken);color:var(--morph-ink-2);white-space:nowrap}
-.morph-badge.accent{background:var(--morph-accent-soft);color:var(--morph-accent)}
+.morph-badge.accent{background:var(--morph-accent-soft);color:var(--morph-accent-text)}
 .morph-badge.good{background:var(--morph-good-soft);color:var(--morph-good)}
 .morph-badge.warn{background:var(--morph-warn-soft);color:var(--morph-warn)}
 .morph-badge.bad{background:var(--morph-bad-soft);color:var(--morph-bad)}
 .morph-badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
 
-.morph-seg{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--morph-line);border-radius:var(--morph-radius);background:var(--morph-surface)}
+.morph-seg{display:inline-flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--morph-line);border-radius:var(--morph-radius-control);background:var(--morph-surface)}
 .morph-seg-label{font-size:12.5px;color:var(--morph-muted);padding:0 6px}
-.morph-seg button{appearance:none;font:inherit;font-size:12.5px;min-height:26px;padding:2px 10px;border-radius:6px;border:0;background:transparent;color:var(--morph-ink-2);cursor:pointer}
-.morph-seg button[aria-pressed="true"]{background:var(--morph-accent-soft);color:var(--morph-accent);font-weight:500}
+.morph-seg button{appearance:none;font:inherit;font-size:12.5px;min-height:26px;padding:2px 10px;border-radius:max(0px,calc(var(--morph-radius-control) - 3px));border:0;background:transparent;color:var(--morph-ink-2);cursor:pointer}
+.morph-seg button[aria-pressed="true"]{background:var(--morph-accent-soft);color:var(--morph-accent-text);font-weight:500}
 .morph-seg.views button[data-view="report"][aria-pressed="true"]{background:var(--morph-sunken);color:var(--morph-ink)}
-.morph-seg.views button[data-view="combined"][aria-pressed="true"]{background:var(--morph-accent-soft);color:var(--morph-accent)}
+.morph-seg.views button[data-view="combined"][aria-pressed="true"]{background:var(--morph-accent-soft);color:var(--morph-accent-text)}
 
 .morph-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--morph-muted)}
-.morph-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 4px 2px 10px;border-radius:999px;background:var(--morph-accent-soft);color:var(--morph-accent);font-size:12.5px}
+.morph-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 4px 2px 10px;border-radius:999px;background:var(--morph-accent-soft);color:var(--morph-accent-text);font-size:12.5px}
 .morph-chip button{appearance:none;border:0;background:transparent;color:inherit;cursor:pointer;min-width:24px;min-height:24px;border-radius:50%;font-size:14px;line-height:1}
 
 .morph-chart{width:100%;overflow-x:auto}
@@ -71,14 +73,15 @@ export const MORPH_CSS = /* css */ `
 .morph-chart .val{fill:var(--morph-ink);font-weight:600}
 .morph-chart .grid{stroke:var(--morph-line)}
 .morph-chart .bar{cursor:pointer}
+.morph-chart rect.mk{rx:var(--morph-bar-radius)}
 .morph-chart .bar:focus-visible rect{outline:none;stroke:var(--morph-ink);stroke-width:2}
 .morph-chart .dim{opacity:.35}
 .morph-legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--morph-muted);margin-top:6px}
-.morph-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.morph-legend i{display:inline-block;width:10px;height:10px;border-radius:min(3px,var(--morph-bar-radius));margin-right:6px;vertical-align:-1px}
 
 .morph-table-wrap{overflow-x:auto;border-top:1px solid var(--morph-line)}
 .morph-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
-.morph-table th{background:var(--morph-sunken);color:var(--morph-ink-2);font-weight:500;font-size:12.5px;text-align:left;padding:9px 12px;border-bottom:1px solid var(--morph-line);white-space:nowrap}
+.morph-table th{background:var(--morph-th-bg);color:var(--morph-ink-2);font-weight:500;font-size:12.5px;text-align:left;padding:9px 12px;border-bottom:1px solid var(--morph-th-line);white-space:nowrap}
 .morph-table td{padding:9px 12px;border-bottom:1px solid var(--morph-line);vertical-align:middle}
 .morph-table .num{text-align:right;font-variant-numeric:tabular-nums}
 .morph-table tr.group td{background:var(--morph-sunken);font-weight:600}
@@ -101,51 +104,51 @@ export const MORPH_CSS = /* css */ `
 .morph-flash-apply td,.morph-flash-apply.card{animation:morph-flash-apply 1.6s ease-out}
 .morph-flash-undo td,.morph-flash-undo.card{animation:morph-flash-undo 1.6s ease-out}
 
-.morph-bulk{position:sticky;bottom:max(12px,env(safe-area-inset-bottom));margin:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px;border-radius:var(--morph-radius-lg);background:#0d1726;color:#fff;box-shadow:var(--morph-shadow-modal);z-index:2}
-.morph-bulk select{font:inherit;font-size:13px;min-height:30px;border-radius:6px;border:1px solid #344154;background:#1b2636;color:#fff;padding:2px 8px}
-.morph-bulk .morph-btn{background:#1b2636;color:#fff;border-color:#344154}
-.morph-bulk .morph-btn.primary{background:var(--morph-accent);border-color:var(--morph-accent)}
+.morph-bulk{position:sticky;bottom:max(12px,env(safe-area-inset-bottom));margin:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px;border-radius:var(--morph-radius-lg);background:var(--morph-ink);color:#fff;box-shadow:var(--morph-shadow-modal);z-index:2}
+.morph-bulk select{font:inherit;font-size:13px;min-height:30px;border-radius:max(0px,calc(var(--morph-radius-control) - 2px));border:1px solid color-mix(in srgb,var(--morph-ink) 70%,#fff);background:color-mix(in srgb,var(--morph-ink) 88%,#fff);color:#fff;padding:2px 8px}
+.morph-bulk .morph-btn{background:color-mix(in srgb,var(--morph-ink) 88%,#fff);color:#fff;border-color:color-mix(in srgb,var(--morph-ink) 70%,#fff)}
+.morph-bulk .morph-btn.primary{background:var(--morph-accent);border-color:var(--morph-accent);color:var(--morph-accent-ink)}
 .morph-bulk .note{font-size:12.5px;color:#c9d1dc}
 
-.morph-overlay{position:fixed;inset:0;background:rgba(13,23,38,.42);display:flex;align-items:flex-start;justify-content:center;padding:max(16px,4vh) 16px;z-index:1000;overflow-y:auto}
-.morph-modal{background:var(--morph-surface);border-radius:16px;box-shadow:var(--morph-shadow-modal);width:min(720px,100%);color:var(--morph-ink);font-family:var(--morph-sans)}
+.morph-overlay{position:fixed;inset:0;background:color-mix(in srgb,var(--morph-ink) 42%,transparent);display:flex;align-items:flex-start;justify-content:center;padding:max(16px,4vh) 16px;z-index:1000;overflow-y:auto}
+.morph-modal{background:var(--morph-surface);border-radius:var(--morph-radius-modal);box-shadow:var(--morph-shadow-modal);width:min(720px,100%);color:var(--morph-ink);font-family:var(--morph-sans)}
 .morph-modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--morph-line);display:flex;justify-content:space-between;gap:12px}
 .morph-modal-title{font-size:20px;font-weight:600;margin-top:8px}
 .morph-modal-body{padding:16px 22px;display:grid;gap:18px}
 .morph-modal-foot{padding:14px 22px;border-top:1px solid var(--morph-line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .morph-eyebrow{font:12px var(--morph-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--morph-ink-2);margin-bottom:8px}
-.morph-select{font:inherit;min-height:40px;width:min(360px,100%);padding:6px 10px;border-radius:var(--morph-radius);border:1px solid var(--morph-line);background:var(--morph-surface);color:var(--morph-ink)}
+.morph-select{font:inherit;min-height:40px;width:min(360px,100%);padding:6px 10px;border-radius:var(--morph-radius-control);border:1px solid var(--morph-line);background:var(--morph-surface);color:var(--morph-ink)}
 .morph-impact{display:grid;grid-template-columns:minmax(80px,140px) 1fr auto;gap:8px 14px;align-items:center;font-size:13.5px}
 .morph-impact .bars{display:grid;gap:4px}
-.morph-impact .now{height:7px;border-radius:4px;background:#cfd6e0}
-.morph-impact .after{height:7px;border-radius:4px;background:var(--morph-accent)}
+.morph-impact .now{height:7px;border-radius:min(4px,var(--morph-bar-radius));background:var(--morph-series-2)}
+.morph-impact .after{height:7px;border-radius:min(4px,var(--morph-bar-radius));background:var(--morph-accent)}
 .morph-impact .after.over{background:var(--morph-bad)}
 .morph-diff{border:1px solid var(--morph-line);border-radius:var(--morph-radius-lg);overflow:hidden;overflow-x:auto}
 .morph-diff table{width:100%;border-collapse:collapse;font-size:13.5px}
 .morph-diff th{background:var(--morph-sunken);text-align:left;font-weight:500;font-size:12.5px;color:var(--morph-ink-2);padding:8px 12px}
 .morph-diff td{padding:8px 12px;border-top:1px solid var(--morph-line)}
 .morph-diff del{color:var(--morph-bad)}
-.morph-diff ins{color:var(--morph-accent);text-decoration:none;font-weight:500}
+.morph-diff ins{color:var(--morph-accent-text);text-decoration:none;font-weight:500}
 .morph-checks{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:13.5px}
 .morph-checks li{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .morph-checks .ok{color:var(--morph-good)}
 .morph-checks .no{color:var(--morph-bad)}
 .morph-code{font:12.5px var(--morph-mono);background:var(--morph-sunken);padding:1px 6px;border-radius:5px}
 .morph-spec{margin:0;font:12px/1.55 var(--morph-mono);background:var(--morph-sunken);border-radius:var(--morph-radius);padding:12px 14px;max-height:320px;overflow:auto;white-space:pre;color:var(--morph-ink)}
-.morph-btn.here{border-style:dashed;border-color:var(--morph-accent);color:var(--morph-accent);background:var(--morph-surface)}
+.morph-btn.here{border-style:dashed;border-color:var(--morph-accent);color:var(--morph-accent-text);background:var(--morph-surface)}
 .morph-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
 .morph-kpis .morph-kpi{border:1px solid var(--morph-line);border-radius:var(--morph-radius-lg);padding:12px 14px;background:var(--morph-surface)}
 .morph-includes{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--morph-ink-2)}
 .morph-alert{padding:10px 12px;border-radius:var(--morph-radius);background:var(--morph-bad-soft);color:var(--morph-bad);font-size:13.5px}
 .morph-alert.warn{background:var(--morph-warn-soft);color:var(--morph-warn)}
-.morph-alert.info{background:var(--morph-accent-soft);color:var(--morph-accent)}
+.morph-alert.info{background:var(--morph-accent-soft);color:var(--morph-accent-text)}
 
 .morph-toasts{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);display:grid;gap:8px;z-index:1001;width:min(560px,calc(100% - 32px))}
-.morph-toast{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:10px 12px 10px 16px;border-radius:var(--morph-radius-lg);background:#0d1726;color:#fff;box-shadow:var(--morph-shadow-modal);font-size:13.5px;animation:morph-toast-in var(--morph-base) ease-out}
-.morph-toast .morph-btn{background:transparent;color:#fff;border-color:#344154}
+.morph-toast{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:10px 12px 10px 16px;border-radius:var(--morph-radius-lg);background:var(--morph-ink);color:#fff;box-shadow:var(--morph-shadow-modal);font-size:13.5px;animation:morph-toast-in var(--morph-base) ease-out}
+.morph-toast .morph-btn{background:transparent;color:#fff;border-color:color-mix(in srgb,var(--morph-ink) 70%,#fff)}
 @keyframes morph-toast-in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
 
-.morph-skel{background:linear-gradient(90deg,var(--morph-sunken),#e9edf2,var(--morph-sunken));background-size:200% 100%;animation:morph-shimmer 1.4s linear infinite;border-radius:6px}
+.morph-skel{background:linear-gradient(90deg,var(--morph-sunken),color-mix(in srgb,var(--morph-line) 60%,var(--morph-sunken)),var(--morph-sunken));background-size:200% 100%;animation:morph-shimmer 1.4s linear infinite;border-radius:6px}
 @keyframes morph-shimmer{to{background-position:-200% 0}}
 .morph-state{padding:28px 18px;text-align:center;color:var(--morph-ink-2);display:grid;gap:10px;justify-items:center}
 .morph-state.error{color:var(--morph-bad)}
@@ -185,9 +188,9 @@ export const MORPH_CSS = /* css */ `
 .morph-qcard .why{color:var(--morph-bad);font-size:13.5px}
 .morph-qactions{display:flex;flex-wrap:wrap;gap:8px}
 .morph-heat{display:grid;gap:4px;font-size:12.5px}
-.morph-heat button{appearance:none;font:inherit;font-weight:600;min-height:36px;border-radius:6px;border:0;cursor:pointer;color:var(--morph-ink)}
+.morph-heat button{appearance:none;font:inherit;font-weight:600;min-height:36px;border-radius:min(6px,var(--morph-radius));border:0;cursor:pointer;color:var(--morph-ink)}
 .morph-viewer{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--morph-ink-2)}
-.morph-avatar{width:26px;height:26px;border-radius:50%;background:var(--morph-accent-soft);color:var(--morph-accent);display:grid;place-items:center;font-size:11.5px;font-weight:600}
+.morph-avatar{width:26px;height:26px;border-radius:50%;background:var(--morph-accent-soft);color:var(--morph-accent-text);display:grid;place-items:center;font-size:11.5px;font-weight:600}
 .morph-suggest{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--morph-line);font-size:13.5px}
 .morph-suggest:last-child{border-bottom:0}
 @media (prefers-reduced-motion:reduce){.morph-root *,.morph-toast,.morph-skel{animation:none!important;transition:none!important}}
@@ -204,40 +207,3 @@ export function injectStyles(doc: Document | undefined = typeof document === 'un
   injected = true;
 }
 
-export interface MorphTheme {
-  accent?: string;
-  accentSoft?: string;
-  radius?: string;
-  fontSans?: string;
-  fontMono?: string;
-  [token: string]: string | undefined;
-}
-
-const TOKEN: Record<string, string> = { accent: '--morph-accent', accentSoft: '--morph-accent-soft', radius: '--morph-radius', fontSans: '--morph-sans', fontMono: '--morph-mono', line: '--morph-line', ink: '--morph-ink', surface: '--morph-surface', bg: '--morph-bg' };
-
-/** Builds inline CSS variables from a theme prop and, when present, shadcn/ui variables. */
-export function themeVars(theme: MorphTheme | undefined, doc: Document | undefined = typeof document === 'undefined' ? undefined : document): Record<string, string> {
-  const vars: Record<string, string> = {};
-  if (doc?.documentElement && typeof getComputedStyle === 'function') {
-    const cs = getComputedStyle(doc.documentElement);
-    const hsl = (name: string) => {
-      const v = cs.getPropertyValue(name).trim();
-      if (!v) return null;
-      return /^[\d.]+\s+[\d.]+%\s+[\d.]+%/.test(v) ? `hsl(${v})` : v;
-    };
-    const primary = hsl('--primary');
-    const border = hsl('--border');
-    const radius = cs.getPropertyValue('--radius').trim();
-    if (primary) {
-      vars['--morph-accent'] = primary;
-      vars['--morph-accent-soft'] = `color-mix(in srgb, ${primary} 10%, white)`;
-    }
-    if (border) vars['--morph-line'] = border;
-    if (radius) vars['--morph-radius'] = radius;
-  }
-  for (const [k, v] of Object.entries(theme ?? {})) {
-    if (!v) continue;
-    vars[k.startsWith('--') ? k : (TOKEN[k] ?? `--morph-${k}`)] = v;
-  }
-  return vars;
-}

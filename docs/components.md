@@ -10,7 +10,7 @@ npm i @morph-reports/react
 | --- | --- |
 | `supabase` | Your supabase-js client, signed in as the viewer. Never a service-role client. |
 | `model`, `reports`, `actions` | The contents of `morph/`. |
-| `theme` | `{ accent, accentSoft, radius, fontSans, fontMono }` or any Morph token. Optional. |
+| `theme` | `'auto'` (default), `'morph'`, `'distinctui'`, or `{ preset?, accent, radius, barRadius, fontSans, ... }` to override single tokens. See Theming. |
 | `config` | `{ stuckDays, idleDays, ownerCap, rowCap, locale }`. Defaults 14, 30, 5, 50 000, `en-ZA`. |
 | `messages` | Override any string from `locales/en.json`. |
 | `onAction` | Called after apply, undo or failure. |
@@ -41,13 +41,28 @@ The action log with Undo, and the "Viewing as Thandi M." line that shows whose a
 
 ## Theming
 
-Morph ships light-mode tokens: accent `#2d5bea`, Geist for text and Geist Mono for numbers. If your app defines shadcn CSS variables (`--primary`, `--radius`, `--border`...), Morph picks them up automatically. Otherwise pass `theme`:
+Reports take on the look of the app they sit in. On mount, `MorphProvider` reads the page around it and maps what it finds onto Morph's tokens, in this order:
+
+| Host has | Morph takes |
+| --- | --- |
+| distinctUI (`--dui-*` variables, from `@distinctui/css`) | The distinctUI preset: black accent, four greys, Bricolage Grotesque, pill buttons, 22px cards, no shadows, black bars with grey comparisons |
+| shadcn/ui, as in Lovable apps (`--primary`, `--foreground`, `--card`, `--muted`, `--border`, `--destructive`, `--ring`, `--radius`), Tailwind v3 HSL channels or v4 full colours | Accent, text, surfaces, lines, the "bad" red, focus ring, corners and bar corners, plus `--font-sans` / `--font-mono` |
+| A brand variable (`--color-primary`, `--brand`, `--bs-primary`, `--pico-primary`, ...) | Accent |
+| Nothing special | The font and text colour of the element Morph is mounted in |
+
+Morph points at the host's variables (`var(--primary)`) rather than copying them, so it follows the host if they change. Anything not found keeps Morph's defaults (accent `#2d5bea`, Geist and Geist Mono). A few guards keep reports readable:
+
+- Morph stays light. Inside a dark page it keeps its own surfaces and only takes the accent, font and corners.
+- An accent too pale to read as text (yellow, orange) gets a darker shade for text, and button text picks black or white by contrast.
+- Green only ever means "good" in data (a target met), and host colours never change it. Red means stuck or over the cap.
+
+To turn detection off use `theme="morph"`; to force distinctUI use `theme="distinctui"`. To override single tokens on top of whatever was detected:
 
 ```tsx
-<MorphProvider theme={{ accent: '#7c3aed', radius: '10px' }} ...>
+<MorphProvider theme={{ accent: '#7c3aed', radius: '10px', barRadius: '2px' }} ...>
 ```
 
-Green only ever means "good" in data (a target met). Red means stuck or over the cap.
+The root element carries `data-morph-theme` (`distinctui`, `shadcn`, `brand-vars`, `computed`, `none` or `morph`) so you can see what was picked up. Try it with `pnpm demo` in `examples/crm-vite` and `?host=lovable`, `?host=ledger` or `?host=distinctui`.
 
 ## Accessibility
 
