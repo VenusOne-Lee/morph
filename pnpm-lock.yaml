@@ -42,6 +42,28 @@ importers:
         specifier: ^2.1.5
         version: 2.1.9(@types/node@22.20.5)
 
+  packages/cli:
+    dependencies:
+      '@morph-reports/mcp':
+        specifier: workspace:*
+        version: link:../mcp
+      '@morph-reports/spec':
+        specifier: workspace:*
+        version: link:../spec
+      '@morph-reports/sql':
+        specifier: workspace:*
+        version: link:../sql
+      pg:
+        specifier: ^8.13.1
+        version: 8.23.1
+    devDependencies:
+      '@morph-reports/testkit':
+        specifier: workspace:*
+        version: link:../testkit
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.23.1
+
   packages/mcp:
     dependencies:
       '@modelcontextprotocol/sdk':
