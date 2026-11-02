@@ -1,0 +1,36 @@
+{
+  "name": "@morph-reports/react",
+  "version": "0.1.0",
+  "description": "MorphProvider, MorphReport, MorphDashboard and action widgets. Runs as the signed-in viewer through Supabase RLS.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node ../../scripts/copy.mjs src/locales dist/locales",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@morph-reports/spec": "workspace:*"
+  },
+  "devDependencies": {
+    "@morph-reports/testkit": "workspace:*",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/dom": "^10.4.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "axe-core": "^4.10.2",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
