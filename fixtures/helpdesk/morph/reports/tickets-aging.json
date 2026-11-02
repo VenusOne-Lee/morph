@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tickets-aging",
+  "title": "Tickets aging",
+  "why": "Open tickets by status and days in status.",
+  "generatedBy": "aging-heatmap",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "agents.display_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "heatmap",
+      "view": "report",
+      "options": {
+        "buckets": [
+          7,
+          14,
+          30
+        ],
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "tickets.assignee_id -> agents.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tickets.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.status",
+      "op": "not_in",
+      "value": [
+        "solved",
+        "closed"
+      ]
+    }
+  ],
+  "groupBy": [
+    "tickets.status",
+    "days_in_stage"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "actions": [
+    "tickets.assignee_id",
+    "tickets.status",
+    "tickets.priority"
+  ]
+}

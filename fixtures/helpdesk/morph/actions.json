@@ -1,0 +1,84 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/actions.v0.json",
+  "specVersion": 0,
+  "undoDays": 30,
+  "actions": [
+    {
+      "id": "tickets.assignee_id",
+      "kind": "set_fk",
+      "table": "tickets",
+      "column": "assignee_id",
+      "label": "Reassign",
+      "target": {
+        "entity": "agents",
+        "field": "id",
+        "display": "display_name"
+      },
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "tickets_update"
+      ]
+    },
+    {
+      "id": "tickets.status",
+      "kind": "set_enum",
+      "table": "tickets",
+      "column": "status",
+      "label": "Move status",
+      "values": [
+        "new",
+        "open",
+        "pending",
+        "solved",
+        "closed"
+      ],
+      "terminal": [
+        "solved",
+        "closed"
+      ],
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "tickets_update"
+      ]
+    },
+    {
+      "id": "tickets.priority",
+      "kind": "set_enum",
+      "table": "tickets",
+      "column": "priority",
+      "label": "Move priority",
+      "values": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "terminal": [],
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "tickets_update"
+      ]
+    }
+  ]
+}

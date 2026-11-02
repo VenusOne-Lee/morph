@@ -1,0 +1,8 @@
+{
+  "name": "helpdesk",
+  "description": "Helpdesk: tickets (status enum, assignee), agents, customers.",
+  "users": {
+    "manager": { "id": "00000000-0000-4000-8001-000000000001", "name": "Naledi P.", "email": "naledi@example.co.za" },
+    "rep": { "id": "00000000-0000-4000-8001-000000000002", "name": "Kabelo S.", "email": "kabelo@example.co.za" }
+  }
+}

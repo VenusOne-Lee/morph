@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "title": "Morph report spec (v0)",
+  "description": "One report: its source, fields, filters, grouping and widgets. Specs, never SQL.",
+  "type": "object",
+  "required": [
+    "specVersion",
+    "id",
+    "title",
+    "source",
+    "fields",
+    "widgets"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "specVersion": {
+      "const": 0
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "why": {
+      "type": "string"
+    },
+    "generatedBy": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "description": "Entity name from the model."
+    },
+    "joins": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_][a-z0-9_.]* -> [a-z_][a-z0-9_.]*$"
+      },
+      "description": "`deals.owner_id -> users.id`"
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "`deals.name`, `users.name as owner`, or a derived field key."
+    },
+    "derived": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "days_since"
+            ],
+            "properties": {
+              "days_since": {
+                "type": "string"
+              },
+              "approximate": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "bucket"
+            ],
+            "properties": {
+              "bucket": {
+                "type": "object",
+                "required": [
+                  "field",
+                  "edges"
+                ],
+                "properties": {
+                  "field": {
+                    "type": "string"
+                  },
+                  "edges": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "labels": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "date_trunc"
+            ],
+            "properties": {
+              "date_trunc": {
+                "type": "object",
+                "required": [
+                  "field",
+                  "unit"
+                ],
+                "properties": {
+                  "field": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "enum": [
+                      "day",
+                      "week",
+                      "month",
+                      "quarter"
+                    ]
+                  }
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "op"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "op": {
+            "enum": [
+              "=",
+              "!=",
+              "in",
+              "not_in",
+              ">",
+              ">=",
+              "<",
+              "<=",
+              "between",
+              "is_null",
+              "not_null",
+              "contains",
+              "last_n_days",
+              "this_month",
+              "this_quarter"
+            ]
+          },
+          "value": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "groupBy": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 2
+    },
+    "groupByOptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "measures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "fn"
+        ],
+        "properties": {
+          "fn": {
+            "enum": [
+              "count",
+              "count_distinct",
+              "sum",
+              "avg",
+              "min",
+              "max"
+            ]
+          },
+          "field": {
+            "type": "string"
+          },
+          "as": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "sort": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "field",
+          "dir"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "dir": {
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        }
+      }
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "widgets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "bar",
+              "column",
+              "funnel",
+              "workload",
+              "heatmap",
+              "kpi",
+              "table",
+              "kanban",
+              "balancer",
+              "queue",
+              "kpi-fix"
+            ]
+          },
+          "view": {
+            "enum": [
+              "report",
+              "act",
+              "combined"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "options": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Action ids from actions.json usable from this report."
+    },
+    "broken": {
+      "type": "object",
+      "required": [
+        "reason"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

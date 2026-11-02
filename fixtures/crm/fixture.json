@@ -1,0 +1,9 @@
+{
+  "name": "crm",
+  "description": "Sales CRM from the prototype: deals, companies, contacts, users, activities (RLS on, no policies), invoices (RLS off).",
+  "users": {
+    "manager": { "id": "00000000-0000-4000-8000-000000000001", "name": "Thandi M.", "email": "thandi@example.co.za" },
+    "rep": { "id": "00000000-0000-4000-8000-000000000002", "name": "Sipho N.", "email": "sipho@example.co.za" },
+    "rep2": { "id": "00000000-0000-4000-8000-000000000003", "name": "Ayesha K.", "email": "ayesha@example.co.za" }
+  }
+}

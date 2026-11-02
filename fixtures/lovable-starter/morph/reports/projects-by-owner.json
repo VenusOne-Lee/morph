@@ -1,0 +1,71 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "projects-by-owner",
+  "title": "Project owner workload",
+  "why": "Open projects per owner, with a cap of 5.",
+  "generatedBy": "owner-workload",
+  "source": "projects",
+  "fields": [
+    "projects.name",
+    "projects.status",
+    "profiles.full_name as owner",
+    "projects.budget",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "workload",
+      "view": "report",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    },
+    {
+      "type": "balancer",
+      "view": "act",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "projects.owner_id -> profiles.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "projects.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "projects.status",
+      "op": "not_in",
+      "value": [
+        "done",
+        "cancelled"
+      ]
+    }
+  ],
+  "groupBy": [
+    "owner"
+  ],
+  "groupByOptions": [
+    "projects.status"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "projects.budget"
+    }
+  ],
+  "actions": [
+    "projects.owner_id"
+  ]
+}

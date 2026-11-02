@@ -1,0 +1,350 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/model.v0.json",
+  "specVersion": 0,
+  "source": {
+    "kind": "supabase",
+    "schemas": [
+      "public"
+    ]
+  },
+  "entities": {
+    "agents": {
+      "name": "agents",
+      "kind": "table",
+      "schema": "public",
+      "label": "Agents",
+      "primaryKey": "id",
+      "displayField": "display_name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "agents_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key",
+          "references": {
+            "entity": "auth.users",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "display_name": {
+          "name": "display_name",
+          "label": "Display name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "email": {
+          "name": "email",
+          "label": "Email",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": false,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email\"; PII: name contains \"email\""
+        },
+        "is_lead": {
+          "name": "is_lead",
+          "label": "Is lead",
+          "pgType": "boolean",
+          "semantic": "boolean",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "boolean column"
+        }
+      }
+    },
+    "customers": {
+      "name": "customers",
+      "kind": "table",
+      "schema": "public",
+      "label": "Customers",
+      "primaryKey": "id",
+      "displayField": "company_name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "customers_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "bigint",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "company_name": {
+          "name": "company_name",
+          "label": "Company name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "contact_email": {
+          "name": "contact_email",
+          "label": "Contact email",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email\"; PII: name contains \"email\""
+        },
+        "mobile": {
+          "name": "mobile",
+          "label": "Mobile",
+          "pgType": "text",
+          "semantic": "phone",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"mobile\"; PII: name contains \"mobile\""
+        },
+        "plan": {
+          "name": "plan",
+          "label": "Plan",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "tickets": {
+      "name": "tickets",
+      "kind": "table",
+      "schema": "public",
+      "label": "Tickets",
+      "primaryKey": "id",
+      "displayField": "subject",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "tickets_select",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "tickets_update",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "bigint",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "subject": {
+          "name": "subject",
+          "label": "Subject",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "label": "Customer",
+          "pgType": "bigint",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references customers",
+          "references": {
+            "entity": "customers",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "assignee_id": {
+          "name": "assignee_id",
+          "label": "Assignee",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references agents (people)",
+          "references": {
+            "entity": "agents",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "status": {
+          "name": "status",
+          "label": "Status",
+          "pgType": "public.ticket_status",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "Postgres enum; 5 values",
+          "enum": "ticket_status"
+        },
+        "priority": {
+          "name": "priority",
+          "label": "Priority",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.75,
+          "reason": "check constraint lists 4 values",
+          "enum": "tickets_priority"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    }
+  },
+  "enums": {
+    "ticket_status": {
+      "id": "ticket_status",
+      "source": "pg_enum",
+      "values": [
+        "new",
+        "open",
+        "pending",
+        "solved",
+        "closed"
+      ],
+      "labels": {
+        "new": "New",
+        "open": "Open",
+        "pending": "Pending",
+        "solved": "Solved",
+        "closed": "Closed"
+      },
+      "terminal": [
+        "solved",
+        "closed"
+      ]
+    },
+    "tickets_priority": {
+      "id": "tickets_priority",
+      "source": "check",
+      "values": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "labels": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "terminal": []
+    }
+  },
+  "joins": [
+    {
+      "from": "tickets.customer_id",
+      "to": "customers.id",
+      "inferred": false
+    },
+    {
+      "from": "tickets.assignee_id",
+      "to": "agents.id",
+      "inferred": false
+    }
+  ]
+}

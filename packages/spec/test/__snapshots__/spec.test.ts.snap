@@ -1,0 +1,144 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > companies-by-contacts 1`] = `
+"-- Report: Companies by contact count
+create or replace view "public"."morph_r_companies_by_contacts" with (security_invoker = true) as
+select
+  "contacts"."id"::text as "_morph_id",
+  "contacts"."xmin"::text as "_morph_version",
+  "contacts"."full_name" as "full_name",
+  "companies"."name" as "company"
+from "public"."contacts" as "contacts"
+left join "public"."companies" as "companies" on "companies"."id" = "contacts"."company_id";
+revoke all on "public"."morph_r_companies_by_contacts" from public, anon;
+grant select on "public"."morph_r_companies_by_contacts" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > companies-by-deals 1`] = `
+"-- Report: Companies by deal count
+create or replace view "public"."morph_r_companies_by_deals" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "companies"."name" as "company",
+  "deals"."value_zar" as "value_zar"
+from "public"."deals" as "deals"
+left join "public"."companies" as "companies" on "companies"."id" = "deals"."company_id";
+revoke all on "public"."morph_r_companies_by_deals" from public, anon;
+grant select on "public"."morph_r_companies_by_deals" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > deals-aging 1`] = `
+"-- Report: Deals aging
+create or replace view "public"."morph_r_deals_aging" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "users"."name" as "owner",
+  "deals"."value_zar" as "value_zar",
+  (current_date - "deals"."stage_changed_at"::date) as "days_in_stage",
+  "deals"."owner_id" as "owner_id"
+from "public"."deals" as "deals"
+left join "public"."users" as "users" on "users"."id" = "deals"."owner_id"
+where "deals"."stage" not in ('won', 'lost');
+revoke all on "public"."morph_r_deals_aging" from public, anon;
+grant select on "public"."morph_r_deals_aging" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > deals-by-owner 1`] = `
+"-- Report: Deal owner workload
+create or replace view "public"."morph_r_deals_by_owner" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "users"."name" as "owner",
+  "deals"."value_zar" as "value_zar",
+  (current_date - "deals"."stage_changed_at"::date) as "days_in_stage",
+  "deals"."owner_id" as "owner_id"
+from "public"."deals" as "deals"
+left join "public"."users" as "users" on "users"."id" = "deals"."owner_id"
+where "deals"."stage" not in ('won', 'lost');
+revoke all on "public"."morph_r_deals_by_owner" from public, anon;
+grant select on "public"."morph_r_deals_by_owner" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > deals-by-stage 1`] = `
+"-- Report: Deals by stage
+create or replace view "public"."morph_r_deals_by_stage" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "users"."name" as "owner",
+  "deals"."value_zar" as "value_zar",
+  (current_date - "deals"."stage_changed_at"::date) as "days_in_stage",
+  "deals"."owner_id" as "owner_id"
+from "public"."deals" as "deals"
+left join "public"."users" as "users" on "users"."id" = "deals"."owner_id"
+where "deals"."stage" not in ('won', 'lost');
+revoke all on "public"."morph_r_deals_by_stage" from public, anon;
+grant select on "public"."morph_r_deals_by_stage" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > idle-deals 1`] = `
+"-- Report: Idle deals
+create or replace view "public"."morph_r_idle_deals" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "users"."name" as "owner",
+  "deals"."value_zar" as "value_zar",
+  (current_date - "deals"."stage_changed_at"::date) as "days_in_stage",
+  "deals"."owner_id" as "owner_id"
+from "public"."deals" as "deals"
+left join "public"."users" as "users" on "users"."id" = "deals"."owner_id"
+where "deals"."stage" not in ('won', 'lost')
+  and (current_date - "deals"."stage_changed_at"::date) > 30;
+revoke all on "public"."morph_r_idle_deals" from public, anon;
+grant select on "public"."morph_r_idle_deals" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > stuck-deals 1`] = `
+"-- Report: Stuck deals
+create or replace view "public"."morph_r_stuck_deals" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "users"."name" as "owner",
+  "deals"."value_zar" as "value_zar",
+  (current_date - "deals"."stage_changed_at"::date) as "days_in_stage",
+  "deals"."owner_id" as "owner_id"
+from "public"."deals" as "deals"
+left join "public"."users" as "users" on "users"."id" = "deals"."owner_id"
+where "deals"."stage" not in ('won', 'lost')
+  and (current_date - "deals"."stage_changed_at"::date) > 14;
+revoke all on "public"."morph_r_stuck_deals" from public, anon;
+grant select on "public"."morph_r_stuck_deals" to authenticated;"
+`;
+
+exports[`view compiler (MO-205) > matches snapshots for every generated report > won-deals-by-month 1`] = `
+"-- Report: Won value by month
+create or replace view "public"."morph_r_won_deals_by_month" with (security_invoker = true) as
+select
+  "deals"."id"::text as "_morph_id",
+  "deals"."xmin"::text as "_morph_version",
+  "deals"."name" as "name",
+  "deals"."stage" as "stage",
+  "deals"."value_zar" as "value_zar",
+  date_trunc('month', "deals"."closed_at")::date as "month"
+from "public"."deals" as "deals"
+where "deals"."stage" = 'won'
+  and "deals"."closed_at" >= now() - make_interval(days => 183);
+revoke all on "public"."morph_r_won_deals_by_month" from public, anon;
+grant select on "public"."morph_r_won_deals_by_month" to authenticated;"
+`;

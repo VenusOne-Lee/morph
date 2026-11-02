@@ -1,0 +1,109 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/actions.v0.json",
+  "specVersion": 0,
+  "undoDays": 30,
+  "actions": [
+    {
+      "id": "projects.status",
+      "kind": "set_enum",
+      "table": "projects",
+      "column": "status",
+      "label": "Move status",
+      "values": [
+        "planning",
+        "active",
+        "on_hold",
+        "done",
+        "cancelled"
+      ],
+      "terminal": [
+        "done",
+        "cancelled"
+      ],
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "Admins update projects"
+      ]
+    },
+    {
+      "id": "projects.owner_id",
+      "kind": "set_fk",
+      "table": "projects",
+      "column": "owner_id",
+      "label": "Reassign",
+      "target": {
+        "entity": "profiles",
+        "field": "id",
+        "display": "full_name"
+      },
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "Admins update projects"
+      ]
+    },
+    {
+      "id": "tasks.status",
+      "kind": "set_enum",
+      "table": "tasks",
+      "column": "status",
+      "label": "Move status",
+      "values": [
+        "todo",
+        "in_progress",
+        "review",
+        "done"
+      ],
+      "terminal": [
+        "done"
+      ],
+      "sideEffects": [
+        {
+          "set": "status_changed_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "Members update tasks"
+      ]
+    },
+    {
+      "id": "tasks.assignee_id",
+      "kind": "set_fk",
+      "table": "tasks",
+      "column": "assignee_id",
+      "label": "Reassign",
+      "target": {
+        "entity": "profiles",
+        "field": "id",
+        "display": "full_name"
+      },
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "Members update tasks"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tasks-by-owner",
+  "title": "Task assignee workload",
+  "why": "Open tasks per owner, with a cap of 5.",
+  "generatedBy": "owner-workload",
+  "source": "tasks",
+  "fields": [
+    "tasks.title",
+    "tasks.status",
+    "profiles.full_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "workload",
+      "view": "report",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    },
+    {
+      "type": "balancer",
+      "view": "act",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "tasks.assignee_id -> profiles.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tasks.status_changed_at"
+    }
+  },
+  "filters": [
+    {
+      "field": "tasks.status",
+      "op": "not_in",
+      "value": [
+        "done"
+      ]
+    }
+  ],
+  "groupBy": [
+    "owner"
+  ],
+  "groupByOptions": [
+    "tasks.status"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "actions": [
+    "tasks.assignee_id"
+  ]
+}

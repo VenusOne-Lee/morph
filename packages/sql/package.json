@@ -1,0 +1,25 @@
+{
+  "name": "@morph-reports/sql",
+  "version": "0.1.0",
+  "description": "Generates the Morph Supabase migration: security_invoker report views, preview/apply/undo functions and the morph_audit table.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run test/unit --passWithNoTests",
+    "test:integration": "vitest run test/integration",
+    "test:gate3": "vitest run test/integration/gate3.test.ts"
+  },
+  "dependencies": {
+    "@morph-reports/spec": "workspace:*"
+  },
+  "devDependencies": {
+    "@morph-reports/testkit": "workspace:*"
+  }
+}

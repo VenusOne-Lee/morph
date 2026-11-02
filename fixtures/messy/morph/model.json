@@ -1,0 +1,350 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/model.v0.json",
+  "specVersion": 0,
+  "source": {
+    "kind": "supabase",
+    "schemas": [
+      "public"
+    ]
+  },
+  "entities": {
+    "audit_trail": {
+      "name": "audit_trail",
+      "kind": "table",
+      "schema": "public",
+      "label": "Audit trail",
+      "primaryKey": "id",
+      "displayField": "message",
+      "rls": "rls_on_no_policies",
+      "policies": [],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "integer",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "message": {
+          "name": "message",
+          "label": "Message",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        }
+      }
+    },
+    "customers": {
+      "name": "customers",
+      "kind": "table",
+      "schema": "public",
+      "label": "Customers",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "customers_all",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "integer",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "email_address": {
+          "name": "email_address",
+          "label": "Email address",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email_address\"; PII: name contains \"email_address\""
+        },
+        "cell": {
+          "name": "cell",
+          "label": "Cell",
+          "pgType": "text",
+          "semantic": "phone",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"cell\"; PII: name contains \"cell\""
+        },
+        "dob": {
+          "name": "dob",
+          "label": "Dob",
+          "pgType": "date",
+          "semantic": "date",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 1,
+          "reason": "date column; PII: name contains \"dob\""
+        }
+      }
+    },
+    "legacy_export": {
+      "name": "legacy_export",
+      "kind": "table",
+      "schema": "public",
+      "label": "Legacy export",
+      "primaryKey": "id",
+      "displayField": null,
+      "rls": "rls_off",
+      "policies": [],
+      "exposed": false,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "integer",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "payload": {
+          "name": "payload",
+          "label": "Payload",
+          "pgType": "jsonb",
+          "semantic": "json",
+          "nullable": true,
+          "pii": false,
+          "exposed": false,
+          "confidence": 1,
+          "reason": "jsonb"
+        },
+        "salary": {
+          "name": "salary",
+          "label": "Salary",
+          "pgType": "numeric",
+          "semantic": "number",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.8,
+          "reason": "name contains \"salary\"; PII: name contains \"salary\""
+        }
+      }
+    },
+    "notes": {
+      "name": "notes",
+      "kind": "table",
+      "schema": "public",
+      "label": "Notes",
+      "primaryKey": null,
+      "displayField": "body",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "notes_all",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "body": {
+          "name": "body",
+          "label": "Body",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "order_id": {
+          "name": "order_id",
+          "label": "Order",
+          "pgType": "integer",
+          "semantic": "fk",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.7,
+          "reason": "looks like a reference to orders",
+          "references": {
+            "entity": "orders",
+            "field": "id",
+            "inferred": true
+          }
+        }
+      }
+    },
+    "orders": {
+      "name": "orders",
+      "kind": "table",
+      "schema": "public",
+      "label": "Orders",
+      "primaryKey": "id",
+      "displayField": null,
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "orders_all",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "integer",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "label": "Customer",
+          "pgType": "integer",
+          "semantic": "fk",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.7,
+          "reason": "looks like a reference to customers",
+          "references": {
+            "entity": "customers",
+            "field": "id",
+            "inferred": true
+          }
+        },
+        "status": {
+          "name": "status",
+          "label": "Status",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.7,
+          "reason": "name contains \"status\"; 6 distinct values",
+          "enum": "orders_status"
+        },
+        "total": {
+          "name": "total",
+          "label": "Total",
+          "pgType": "numeric",
+          "semantic": "money",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.85,
+          "reason": "name \"total\" looks like money"
+        },
+        "created": {
+          "name": "created",
+          "label": "Created",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    }
+  },
+  "enums": {
+    "orders_status": {
+      "id": "orders_status",
+      "source": "sampled",
+      "values": [
+        "Cancelled",
+        "Open",
+        "SHIPPED",
+        "delivered",
+        "open",
+        "shipped"
+      ],
+      "labels": {
+        "Cancelled": "Cancelled",
+        "Open": "Open",
+        "SHIPPED": "Shipped",
+        "delivered": "Delivered",
+        "open": "Open",
+        "shipped": "Shipped"
+      },
+      "terminal": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ]
+    }
+  },
+  "joins": [
+    {
+      "from": "notes.order_id",
+      "to": "orders.id",
+      "inferred": true
+    },
+    {
+      "from": "orders.customer_id",
+      "to": "customers.id",
+      "inferred": true
+    }
+  ]
+}

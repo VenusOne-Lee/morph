@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "orders-by-month",
+  "title": "Orders created by month",
+  "why": "New orders in each of the last 6 months.",
+  "generatedBy": "trend-over-time",
+  "source": "orders",
+  "fields": [
+    "orders.status",
+    "orders.total",
+    "month"
+  ],
+  "widgets": [
+    {
+      "type": "column",
+      "view": "report",
+      "options": {
+        "months": 6
+      }
+    }
+  ],
+  "derived": {
+    "month": {
+      "date_trunc": {
+        "field": "orders.created",
+        "unit": "month"
+      }
+    }
+  },
+  "filters": [
+    {
+      "field": "orders.created",
+      "op": "last_n_days",
+      "value": 183
+    }
+  ],
+  "groupBy": [
+    "month"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "month",
+      "dir": "asc"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "idle-orders",
+  "title": "Idle orders",
+  "why": "Open orders with no status change in over 30 days, and the value at risk.",
+  "generatedBy": "idle-records",
+  "source": "orders",
+  "fields": [
+    "orders.status",
+    "orders.total",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "kpi-fix",
+      "view": "report",
+      "options": {
+        "idleDays": 30
+      }
+    }
+  ],
+  "joins": [],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "orders.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "orders.status",
+      "op": "not_in",
+      "value": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ]
+    },
+    {
+      "field": "days_in_stage",
+      "op": ">",
+      "value": 30
+    }
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "orders.total"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": []
+}

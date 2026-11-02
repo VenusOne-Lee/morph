@@ -1,0 +1,70 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "deals-by-owner",
+  "title": "Deal owner workload",
+  "why": "Open deals per owner, with a cap of 5.",
+  "generatedBy": "owner-workload",
+  "source": "deals",
+  "fields": [
+    "deals.name",
+    "deals.stage",
+    "users.name as owner",
+    "deals.value_zar",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "workload",
+      "view": "report",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    },
+    {
+      "type": "balancer",
+      "view": "act",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "deals.owner_id -> users.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "deals.stage_changed_at"
+    }
+  },
+  "filters": [
+    {
+      "field": "deals.stage",
+      "op": "not_in",
+      "value": [
+        "won",
+        "lost"
+      ]
+    }
+  ],
+  "groupBy": [
+    "owner"
+  ],
+  "groupByOptions": [
+    "deals.stage"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "deals.value_zar"
+    }
+  ],
+  "actions": [
+    "deals.owner_id"
+  ]
+}

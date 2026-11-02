@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "companies-by-deals",
+  "title": "Companies by deal count",
+  "why": "Top 10 companies by number of deals and their total value.",
+  "generatedBy": "top-related",
+  "source": "deals",
+  "joins": [
+    "deals.company_id -> companies.id"
+  ],
+  "fields": [
+    "deals.name",
+    "companies.name as company",
+    "deals.value_zar"
+  ],
+  "groupBy": [
+    "company"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "deals.value_zar"
+    }
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report",
+      "options": {
+        "topN": 10,
+        "sortBy": "count"
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "orders-aging",
+  "title": "Orders aging",
+  "why": "Open orders by status and days in status.",
+  "generatedBy": "aging-heatmap",
+  "source": "orders",
+  "fields": [
+    "orders.status",
+    "orders.total",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "heatmap",
+      "view": "report",
+      "options": {
+        "buckets": [
+          7,
+          14,
+          30
+        ],
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "orders.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "orders.status",
+      "op": "not_in",
+      "value": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ]
+    }
+  ],
+  "groupBy": [
+    "orders.status",
+    "days_in_stage"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "actions": []
+}

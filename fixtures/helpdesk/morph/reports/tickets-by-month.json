@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tickets-by-month",
+  "title": "Tickets created by month",
+  "why": "New tickets in each of the last 6 months.",
+  "generatedBy": "trend-over-time",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "month"
+  ],
+  "widgets": [
+    {
+      "type": "column",
+      "view": "report",
+      "options": {
+        "months": 6
+      }
+    }
+  ],
+  "derived": {
+    "month": {
+      "date_trunc": {
+        "field": "tickets.created_at",
+        "unit": "month"
+      }
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.created_at",
+      "op": "last_n_days",
+      "value": 183
+    }
+  ],
+  "groupBy": [
+    "month"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "month",
+      "dir": "asc"
+    }
+  ]
+}

@@ -1,0 +1,719 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/model.v0.json",
+  "specVersion": 0,
+  "source": {
+    "kind": "supabase",
+    "schemas": [
+      "public"
+    ]
+  },
+  "entities": {
+    "activities": {
+      "name": "activities",
+      "kind": "table",
+      "schema": "public",
+      "label": "Activities",
+      "primaryKey": "id",
+      "displayField": "kind",
+      "rls": "rls_on_no_policies",
+      "policies": [],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "kind": {
+          "name": "kind",
+          "label": "Kind",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "deal_id": {
+          "name": "deal_id",
+          "label": "Deal",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references deals",
+          "references": {
+            "entity": "deals",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "user_id": {
+          "name": "user_id",
+          "label": "User",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references users (people)",
+          "references": {
+            "entity": "users",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "companies": {
+      "name": "companies",
+      "kind": "table",
+      "schema": "public",
+      "label": "Companies",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "companies_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "industry": {
+          "name": "industry",
+          "label": "Industry",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "city": {
+          "name": "city",
+          "label": "City",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "contacts": {
+      "name": "contacts",
+      "kind": "table",
+      "schema": "public",
+      "label": "Contacts",
+      "primaryKey": "id",
+      "displayField": "full_name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "contacts_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "company_id": {
+          "name": "company_id",
+          "label": "Company",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references companies",
+          "references": {
+            "entity": "companies",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "full_name": {
+          "name": "full_name",
+          "label": "Full name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "email": {
+          "name": "email",
+          "label": "Email",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email\"; PII: name contains \"email\""
+        },
+        "phone": {
+          "name": "phone",
+          "label": "Phone",
+          "pgType": "text",
+          "semantic": "phone",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"phone\"; PII: name contains \"phone\""
+        },
+        "id_number": {
+          "name": "id_number",
+          "label": "Id number",
+          "pgType": "text",
+          "semantic": "sa_id_number",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.9,
+          "reason": "name contains \"id_number\"; PII: name contains \"id_number\""
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "deals": {
+      "name": "deals",
+      "kind": "table",
+      "schema": "public",
+      "label": "Deals",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "deals_team_select",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "deals_team_update",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "ref": {
+          "name": "ref",
+          "label": "Ref",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "company_id": {
+          "name": "company_id",
+          "label": "Company",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references companies",
+          "references": {
+            "entity": "companies",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "label": "Owner",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references users (people)",
+          "references": {
+            "entity": "users",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "stage": {
+          "name": "stage",
+          "label": "Stage",
+          "pgType": "public.deal_stage",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "Postgres enum; 5 values",
+          "enum": "deal_stage"
+        },
+        "value_zar": {
+          "name": "value_zar",
+          "label": "Value zar",
+          "pgType": "numeric(12,2)",
+          "semantic": "money",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "name \"value_zar\" looks like money",
+          "currency": "ZAR"
+        },
+        "stage_changed_at": {
+          "name": "stage_changed_at",
+          "label": "Stage changed at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "label": "Closed at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "invoices": {
+      "name": "invoices",
+      "kind": "table",
+      "schema": "public",
+      "label": "Invoices",
+      "primaryKey": "id",
+      "displayField": "status",
+      "rls": "rls_off",
+      "policies": [],
+      "exposed": false,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "deal_id": {
+          "name": "deal_id",
+          "label": "Deal",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references deals",
+          "references": {
+            "entity": "deals",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "amount_zar": {
+          "name": "amount_zar",
+          "label": "Amount zar",
+          "pgType": "numeric(12,2)",
+          "semantic": "money",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "name \"amount_zar\" looks like money",
+          "currency": "ZAR"
+        },
+        "status": {
+          "name": "status",
+          "label": "Status",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "issued_at": {
+          "name": "issued_at",
+          "label": "Issued at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "teams": {
+      "name": "teams",
+      "kind": "table",
+      "schema": "public",
+      "label": "Teams",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "teams_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        }
+      }
+    },
+    "users": {
+      "name": "users",
+      "kind": "table",
+      "schema": "public",
+      "label": "Users",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "users_team_read",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key",
+          "references": {
+            "entity": "auth.users",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "team_id": {
+          "name": "team_id",
+          "label": "Team",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references teams",
+          "references": {
+            "entity": "teams",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "email": {
+          "name": "email",
+          "label": "Email",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": false,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email\"; PII: name contains \"email\""
+        },
+        "role": {
+          "name": "role",
+          "label": "Role",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.75,
+          "reason": "check constraint lists 2 values",
+          "enum": "users_role"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    }
+  },
+  "enums": {
+    "deal_stage": {
+      "id": "deal_stage",
+      "source": "pg_enum",
+      "values": [
+        "lead",
+        "qualified",
+        "proposal",
+        "won",
+        "lost"
+      ],
+      "labels": {
+        "lead": "Lead",
+        "qualified": "Qualified",
+        "proposal": "Proposal",
+        "won": "Won",
+        "lost": "Lost"
+      },
+      "terminal": [
+        "won",
+        "lost"
+      ]
+    },
+    "users_role": {
+      "id": "users_role",
+      "source": "check",
+      "values": [
+        "rep",
+        "sales_manager"
+      ],
+      "labels": {
+        "rep": "Rep",
+        "sales_manager": "Sales manager"
+      },
+      "terminal": []
+    }
+  },
+  "joins": [
+    {
+      "from": "activities.deal_id",
+      "to": "deals.id",
+      "inferred": false
+    },
+    {
+      "from": "activities.user_id",
+      "to": "users.id",
+      "inferred": false
+    },
+    {
+      "from": "contacts.company_id",
+      "to": "companies.id",
+      "inferred": false
+    },
+    {
+      "from": "deals.company_id",
+      "to": "companies.id",
+      "inferred": false
+    },
+    {
+      "from": "deals.owner_id",
+      "to": "users.id",
+      "inferred": false
+    },
+    {
+      "from": "invoices.deal_id",
+      "to": "deals.id",
+      "inferred": false
+    },
+    {
+      "from": "users.team_id",
+      "to": "teams.id",
+      "inferred": false
+    }
+  ]
+}

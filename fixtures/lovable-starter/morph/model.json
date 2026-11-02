@@ -1,0 +1,596 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/model.v0.json",
+  "specVersion": 0,
+  "source": {
+    "kind": "supabase",
+    "schemas": [
+      "public"
+    ]
+  },
+  "entities": {
+    "organisation_members": {
+      "name": "organisation_members",
+      "kind": "table",
+      "schema": "public",
+      "label": "Organisation members",
+      "primaryKey": null,
+      "displayField": null,
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "Members view membership",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "organisation_id": {
+          "name": "organisation_id",
+          "label": "Organisation",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references organisations",
+          "references": {
+            "entity": "organisations",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "user_id": {
+          "name": "user_id",
+          "label": "User",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references profiles (people)",
+          "references": {
+            "entity": "profiles",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "role": {
+          "name": "role",
+          "label": "Role",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.75,
+          "reason": "check constraint lists 3 values",
+          "enum": "organisation_members_role"
+        }
+      }
+    },
+    "organisations": {
+      "name": "organisations",
+      "kind": "table",
+      "schema": "public",
+      "label": "Organisations",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "Members view orgs",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "profiles": {
+      "name": "profiles",
+      "kind": "table",
+      "schema": "public",
+      "label": "Profiles",
+      "primaryKey": "id",
+      "displayField": "full_name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "Profiles are viewable by members",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "Users update own profile",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key",
+          "references": {
+            "entity": "auth.users",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "full_name": {
+          "name": "full_name",
+          "label": "Full name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "label": "Avatar url",
+          "pgType": "text",
+          "semantic": "url",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.8,
+          "reason": "looks like a URL"
+        },
+        "email": {
+          "name": "email",
+          "label": "Email",
+          "pgType": "text",
+          "semantic": "email",
+          "nullable": true,
+          "pii": true,
+          "exposed": false,
+          "confidence": 0.95,
+          "reason": "name contains \"email\"; PII: name contains \"email\""
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "projects": {
+      "name": "projects",
+      "kind": "table",
+      "schema": "public",
+      "label": "Projects",
+      "primaryKey": "id",
+      "displayField": "name",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "Admins update projects",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "Members view projects",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "name": {
+          "name": "name",
+          "label": "Name",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "organisation_id": {
+          "name": "organisation_id",
+          "label": "Organisation",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references organisations",
+          "references": {
+            "entity": "organisations",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "status": {
+          "name": "status",
+          "label": "Status",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "check constraint lists 5 values",
+          "enum": "projects_status"
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "label": "Owner",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references profiles (people)",
+          "references": {
+            "entity": "profiles",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "budget": {
+          "name": "budget",
+          "label": "Budget",
+          "pgType": "numeric(12,2)",
+          "semantic": "money",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.85,
+          "reason": "name \"budget\" looks like money"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    },
+    "tasks": {
+      "name": "tasks",
+      "kind": "table",
+      "schema": "public",
+      "label": "Tasks",
+      "primaryKey": "id",
+      "displayField": "title",
+      "rls": "rls_ok",
+      "policies": [
+        {
+          "name": "Members update tasks",
+          "command": "UPDATE",
+          "roles": [
+            "authenticated"
+          ]
+        },
+        {
+          "name": "Members view tasks",
+          "command": "SELECT",
+          "roles": [
+            "authenticated"
+          ]
+        }
+      ],
+      "exposed": true,
+      "fields": {
+        "id": {
+          "name": "id",
+          "label": "Id",
+          "pgType": "uuid",
+          "semantic": "id",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "primary key"
+        },
+        "title": {
+          "name": "title",
+          "label": "Title",
+          "pgType": "text",
+          "semantic": "text",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.6,
+          "reason": "text"
+        },
+        "project_id": {
+          "name": "project_id",
+          "label": "Project",
+          "pgType": "uuid",
+          "semantic": "fk",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "references projects",
+          "references": {
+            "entity": "projects",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "status": {
+          "name": "status",
+          "label": "Status",
+          "pgType": "text",
+          "semantic": "status_enum",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "check constraint lists 4 values",
+          "enum": "tasks_status"
+        },
+        "assignee_id": {
+          "name": "assignee_id",
+          "label": "Assignee",
+          "pgType": "uuid",
+          "semantic": "owner_ref",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 0.95,
+          "reason": "references profiles (people)",
+          "references": {
+            "entity": "profiles",
+            "field": "id",
+            "inferred": false
+          }
+        },
+        "due_date": {
+          "name": "due_date",
+          "label": "Due date",
+          "pgType": "date",
+          "semantic": "date",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "date column"
+        },
+        "created_at": {
+          "name": "created_at",
+          "label": "Created at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "label": "Updated at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "status_changed_at": {
+          "name": "status_changed_at",
+          "label": "Status changed at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": false,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "label": "Completed at",
+          "pgType": "timestamp with time zone",
+          "semantic": "datetime",
+          "nullable": true,
+          "pii": false,
+          "exposed": true,
+          "confidence": 1,
+          "reason": "timestamp with time zone"
+        }
+      }
+    }
+  },
+  "enums": {
+    "organisation_members_role": {
+      "id": "organisation_members_role",
+      "source": "check",
+      "values": [
+        "owner",
+        "admin",
+        "member"
+      ],
+      "labels": {
+        "owner": "Owner",
+        "admin": "Admin",
+        "member": "Member"
+      },
+      "terminal": []
+    },
+    "projects_status": {
+      "id": "projects_status",
+      "source": "check",
+      "values": [
+        "planning",
+        "active",
+        "on_hold",
+        "done",
+        "cancelled"
+      ],
+      "labels": {
+        "planning": "Planning",
+        "active": "Active",
+        "on_hold": "On hold",
+        "done": "Done",
+        "cancelled": "Cancelled"
+      },
+      "terminal": [
+        "done",
+        "cancelled"
+      ]
+    },
+    "tasks_status": {
+      "id": "tasks_status",
+      "source": "check",
+      "values": [
+        "todo",
+        "in_progress",
+        "review",
+        "done"
+      ],
+      "labels": {
+        "todo": "Todo",
+        "in_progress": "In progress",
+        "review": "Review",
+        "done": "Done"
+      },
+      "terminal": [
+        "done"
+      ]
+    }
+  },
+  "joins": [
+    {
+      "from": "organisation_members.organisation_id",
+      "to": "organisations.id",
+      "inferred": false
+    },
+    {
+      "from": "organisation_members.user_id",
+      "to": "profiles.id",
+      "inferred": false
+    },
+    {
+      "from": "projects.organisation_id",
+      "to": "organisations.id",
+      "inferred": false
+    },
+    {
+      "from": "projects.owner_id",
+      "to": "profiles.id",
+      "inferred": false
+    },
+    {
+      "from": "tasks.project_id",
+      "to": "projects.id",
+      "inferred": false
+    },
+    {
+      "from": "tasks.assignee_id",
+      "to": "profiles.id",
+      "inferred": false
+    }
+  ]
+}

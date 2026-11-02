@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "projects-by-month",
+  "title": "Projects created by month",
+  "why": "New projects in each of the last 6 months.",
+  "generatedBy": "trend-over-time",
+  "source": "projects",
+  "fields": [
+    "projects.name",
+    "projects.status",
+    "projects.budget",
+    "month"
+  ],
+  "widgets": [
+    {
+      "type": "column",
+      "view": "report",
+      "options": {
+        "months": 6
+      }
+    }
+  ],
+  "derived": {
+    "month": {
+      "date_trunc": {
+        "field": "projects.created_at",
+        "unit": "month"
+      }
+    }
+  },
+  "filters": [
+    {
+      "field": "projects.created_at",
+      "op": "last_n_days",
+      "value": 183
+    }
+  ],
+  "groupBy": [
+    "month"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "month",
+      "dir": "asc"
+    }
+  ]
+}
