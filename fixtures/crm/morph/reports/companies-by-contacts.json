@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "companies-by-contacts",
+  "title": "Companies by contact count",
+  "why": "Top 10 companies by number of contacts.",
+  "generatedBy": "top-related",
+  "source": "contacts",
+  "joins": [
+    "contacts.company_id -> companies.id"
+  ],
+  "fields": [
+    "contacts.full_name",
+    "companies.name as company"
+  ],
+  "groupBy": [
+    "company"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report",
+      "options": {
+        "topN": 10,
+        "sortBy": "count"
+      }
+    }
+  ]
+}

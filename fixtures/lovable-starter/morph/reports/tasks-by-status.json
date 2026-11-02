@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tasks-by-status",
+  "title": "Tasks by status",
+  "why": "Open tasks in each status, in status order.",
+  "generatedBy": "pipeline-by-stage",
+  "source": "tasks",
+  "fields": [
+    "tasks.title",
+    "tasks.status",
+    "profiles.full_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report"
+    },
+    {
+      "type": "kanban",
+      "view": "combined"
+    },
+    {
+      "type": "table"
+    }
+  ],
+  "joins": [
+    "tasks.assignee_id -> profiles.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tasks.status_changed_at"
+    }
+  },
+  "filters": [
+    {
+      "field": "tasks.status",
+      "op": "not_in",
+      "value": [
+        "done"
+      ]
+    }
+  ],
+  "groupBy": [
+    "tasks.status"
+  ],
+  "groupByOptions": [
+    "owner"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "tasks.status",
+    "tasks.assignee_id"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "stuck-tickets",
+  "title": "Stuck tickets",
+  "why": "Open tickets that haven't moved status in over 14 days, oldest first.",
+  "generatedBy": "stuck-records",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "agents.display_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "title": "Stuck tickets",
+      "type": "kpi"
+    },
+    {
+      "type": "table"
+    },
+    {
+      "type": "queue",
+      "view": "report",
+      "options": {
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "tickets.assignee_id -> agents.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tickets.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.status",
+      "op": "not_in",
+      "value": [
+        "solved",
+        "closed"
+      ]
+    },
+    {
+      "field": "days_in_stage",
+      "op": ">",
+      "value": 14
+    }
+  ],
+  "groupBy": [
+    "tickets.status"
+  ],
+  "groupByOptions": [
+    "owner"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "tickets.assignee_id",
+    "tickets.status",
+    "tickets.priority"
+  ]
+}

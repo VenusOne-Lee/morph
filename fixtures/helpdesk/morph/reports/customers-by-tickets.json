@@ -1,0 +1,34 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "customers-by-tickets",
+  "title": "Customers by ticket count",
+  "why": "Top 10 customers by number of tickets.",
+  "generatedBy": "top-related",
+  "source": "tickets",
+  "joins": [
+    "tickets.customer_id -> customers.id"
+  ],
+  "fields": [
+    "tickets.subject",
+    "customers.company_name as customer"
+  ],
+  "groupBy": [
+    "customer"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report",
+      "options": {
+        "topN": 10,
+        "sortBy": "count"
+      }
+    }
+  ]
+}

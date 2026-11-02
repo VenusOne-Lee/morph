@@ -1,0 +1,22 @@
+{
+  "name": "@morph-reports/testkit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Test helpers: fixture databases and a supabase-js compatible client that runs as a fixture user, the way PostgREST does.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@morph-reports/spec": "workspace:*",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": { "@types/pg": "^8.11.10" }
+}

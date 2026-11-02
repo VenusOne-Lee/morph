@@ -1,0 +1,66 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tickets-by-owner",
+  "title": "Ticket assignee workload",
+  "why": "Open tickets per owner, with a cap of 5.",
+  "generatedBy": "owner-workload",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "agents.display_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "workload",
+      "view": "report",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    },
+    {
+      "type": "balancer",
+      "view": "act",
+      "options": {
+        "cap": 5,
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "tickets.assignee_id -> agents.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tickets.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.status",
+      "op": "not_in",
+      "value": [
+        "solved",
+        "closed"
+      ]
+    }
+  ],
+  "groupBy": [
+    "owner"
+  ],
+  "groupByOptions": [
+    "tickets.status"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "actions": [
+    "tickets.assignee_id"
+  ]
+}

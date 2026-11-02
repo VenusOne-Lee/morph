@@ -1,0 +1,37 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/actions.v0.json",
+  "specVersion": 0,
+  "undoDays": 30,
+  "actions": [
+    {
+      "id": "orders.status",
+      "kind": "set_enum",
+      "table": "orders",
+      "column": "status",
+      "label": "Move status",
+      "values": [
+        "Cancelled",
+        "Open",
+        "SHIPPED",
+        "delivered",
+        "open",
+        "shipped"
+      ],
+      "terminal": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ],
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": false,
+      "policies": []
+    }
+  ]
+}

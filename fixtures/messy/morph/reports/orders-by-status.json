@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "orders-by-status",
+  "title": "Orders by status",
+  "why": "Open orders in each status, in status order.",
+  "generatedBy": "pipeline-by-stage",
+  "source": "orders",
+  "fields": [
+    "orders.status",
+    "orders.total",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report"
+    },
+    {
+      "type": "kanban",
+      "view": "combined"
+    },
+    {
+      "type": "table"
+    }
+  ],
+  "joins": [],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "orders.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "orders.status",
+      "op": "not_in",
+      "value": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ]
+    }
+  ],
+  "groupBy": [
+    "orders.status"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "orders.total"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": []
+}

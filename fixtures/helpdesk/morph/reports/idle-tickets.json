@@ -1,0 +1,64 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "idle-tickets",
+  "title": "Idle tickets",
+  "why": "Open tickets with no status change in over 30 days.",
+  "generatedBy": "idle-records",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "agents.display_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "kpi-fix",
+      "view": "report",
+      "options": {
+        "idleDays": 30
+      }
+    }
+  ],
+  "joins": [
+    "tickets.assignee_id -> agents.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tickets.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.status",
+      "op": "not_in",
+      "value": [
+        "solved",
+        "closed"
+      ]
+    },
+    {
+      "field": "days_in_stage",
+      "op": ">",
+      "value": 30
+    }
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "tickets.assignee_id",
+    "tickets.status",
+    "tickets.priority"
+  ]
+}

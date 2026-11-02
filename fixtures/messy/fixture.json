@@ -1,0 +1,8 @@
+{
+  "name": "messy",
+  "description": "No FKs, mixed-case text statuses, a table with RLS off, a table with RLS on but no policies, a table without a primary key.",
+  "users": {
+    "manager": { "id": "00000000-0000-4000-8003-000000000001", "name": "M", "email": "m@example.com" },
+    "rep": { "id": "00000000-0000-4000-8003-000000000001", "name": "M", "email": "m@example.com" }
+  }
+}

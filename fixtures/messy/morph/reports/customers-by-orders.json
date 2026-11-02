@@ -1,0 +1,38 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "customers-by-orders",
+  "title": "Customers by order count",
+  "why": "Top 10 customers by number of orders and their total value.",
+  "generatedBy": "top-related",
+  "source": "orders",
+  "joins": [
+    "orders.customer_id -> customers.id"
+  ],
+  "fields": [
+    "customers.name as customer",
+    "orders.total"
+  ],
+  "groupBy": [
+    "customer"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "orders.total"
+    }
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report",
+      "options": {
+        "topN": 10,
+        "sortBy": "count"
+      }
+    }
+  ]
+}

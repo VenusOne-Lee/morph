@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "won-deals-by-month",
+  "title": "Won value by month",
+  "why": "Deals marked won in each of the last 6 months.",
+  "generatedBy": "trend-over-time",
+  "source": "deals",
+  "fields": [
+    "deals.name",
+    "deals.stage",
+    "deals.value_zar",
+    "month"
+  ],
+  "widgets": [
+    {
+      "type": "column",
+      "view": "report",
+      "options": {
+        "months": 6
+      }
+    }
+  ],
+  "derived": {
+    "month": {
+      "date_trunc": {
+        "field": "deals.closed_at",
+        "unit": "month"
+      }
+    }
+  },
+  "filters": [
+    {
+      "field": "deals.stage",
+      "op": "=",
+      "value": "won"
+    },
+    {
+      "field": "deals.closed_at",
+      "op": "last_n_days",
+      "value": 183
+    }
+  ],
+  "groupBy": [
+    "month"
+  ],
+  "measures": [
+    {
+      "fn": "sum",
+      "field": "deals.value_zar"
+    },
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "month",
+      "dir": "asc"
+    }
+  ]
+}

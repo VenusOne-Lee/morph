@@ -1,0 +1,69 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "tickets-by-status",
+  "title": "Tickets by status",
+  "why": "Open tickets in each status, in status order.",
+  "generatedBy": "pipeline-by-stage",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "tickets.status",
+    "agents.display_name as owner",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report"
+    },
+    {
+      "type": "kanban",
+      "view": "combined"
+    },
+    {
+      "type": "table"
+    }
+  ],
+  "joins": [
+    "tickets.assignee_id -> agents.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "tickets.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.status",
+      "op": "not_in",
+      "value": [
+        "solved",
+        "closed"
+      ]
+    }
+  ],
+  "groupBy": [
+    "tickets.status"
+  ],
+  "groupByOptions": [
+    "owner"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "tickets.assignee_id",
+    "tickets.status",
+    "tickets.priority"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "idle-projects",
+  "title": "Idle projects",
+  "why": "Open projects with no status change in over 30 days, and the value at risk.",
+  "generatedBy": "idle-records",
+  "source": "projects",
+  "fields": [
+    "projects.name",
+    "projects.status",
+    "profiles.full_name as owner",
+    "projects.budget",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "kpi-fix",
+      "view": "report",
+      "options": {
+        "idleDays": 30
+      }
+    }
+  ],
+  "joins": [
+    "projects.owner_id -> profiles.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "projects.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "projects.status",
+      "op": "not_in",
+      "value": [
+        "done",
+        "cancelled"
+      ]
+    },
+    {
+      "field": "days_in_stage",
+      "op": ">",
+      "value": 30
+    }
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "projects.budget"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "projects.status",
+    "projects.owner_id"
+  ]
+}

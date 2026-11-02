@@ -1,0 +1,22 @@
+{
+  "name": "@morph-reports/spec",
+  "version": "0.1.0",
+  "description": "Morph semantic model, report and action specs: types, JSON Schema, validator, compiler, aggregation.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./schema/*": "./schema/*"
+  },
+  "files": ["dist", "schema"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "devDependencies": {}
+}

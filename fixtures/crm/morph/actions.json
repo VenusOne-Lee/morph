@@ -1,0 +1,89 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/actions.v0.json",
+  "specVersion": 0,
+  "undoDays": 30,
+  "actions": [
+    {
+      "id": "activities.user_id",
+      "kind": "set_fk",
+      "table": "activities",
+      "column": "user_id",
+      "label": "Reassign",
+      "target": {
+        "entity": "users",
+        "field": "id",
+        "display": "name"
+      },
+      "bulkMax": 25,
+      "enabled": false,
+      "policies": []
+    },
+    {
+      "id": "deals.owner_id",
+      "kind": "set_fk",
+      "table": "deals",
+      "column": "owner_id",
+      "label": "Reassign",
+      "target": {
+        "entity": "users",
+        "field": "id",
+        "display": "name"
+      },
+      "sideEffects": [
+        {
+          "set": "updated_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "deals_team_update"
+      ]
+    },
+    {
+      "id": "deals.stage",
+      "kind": "set_enum",
+      "table": "deals",
+      "column": "stage",
+      "label": "Move stage",
+      "values": [
+        "lead",
+        "qualified",
+        "proposal",
+        "won",
+        "lost"
+      ],
+      "terminal": [
+        "won",
+        "lost"
+      ],
+      "sideEffects": [
+        {
+          "set": "stage_changed_at",
+          "to": "now()"
+        }
+      ],
+      "bulkMax": 25,
+      "enabled": true,
+      "policies": [
+        "deals_team_update"
+      ]
+    },
+    {
+      "id": "users.role",
+      "kind": "set_enum",
+      "table": "users",
+      "column": "role",
+      "label": "Move role",
+      "values": [
+        "rep",
+        "sales_manager"
+      ],
+      "terminal": [],
+      "bulkMax": 25,
+      "enabled": false,
+      "policies": []
+    }
+  ]
+}

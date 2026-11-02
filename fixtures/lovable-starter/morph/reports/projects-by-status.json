@@ -1,0 +1,73 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "projects-by-status",
+  "title": "Projects by status",
+  "why": "Open projects in each status, in status order.",
+  "generatedBy": "pipeline-by-stage",
+  "source": "projects",
+  "fields": [
+    "projects.name",
+    "projects.status",
+    "profiles.full_name as owner",
+    "projects.budget",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report"
+    },
+    {
+      "type": "kanban",
+      "view": "combined"
+    },
+    {
+      "type": "table"
+    }
+  ],
+  "joins": [
+    "projects.owner_id -> profiles.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "projects.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "projects.status",
+      "op": "not_in",
+      "value": [
+        "done",
+        "cancelled"
+      ]
+    }
+  ],
+  "groupBy": [
+    "projects.status"
+  ],
+  "groupByOptions": [
+    "owner"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "projects.budget"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "projects.status",
+    "projects.owner_id"
+  ]
+}

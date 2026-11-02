@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/actions.v0.json",
+  "title": "Morph actions (v0)",
+  "description": "Actions viewers may take. Each runs as the viewer under your UPDATE policies, with preview and undo.",
+  "type": "object",
+  "required": [
+    "specVersion",
+    "undoDays",
+    "actions"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "specVersion": {
+      "const": 0
+    },
+    "undoDays": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 90,
+      "default": 30
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "table",
+          "column",
+          "bulkMax",
+          "enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z_][a-z0-9_]*\\.[a-z_][a-z0-9_]*$"
+          },
+          "kind": {
+            "enum": [
+              "set_enum",
+              "set_fk"
+            ]
+          },
+          "table": {
+            "type": "string",
+            "pattern": "^[a-z_][a-z0-9_]*$"
+          },
+          "column": {
+            "type": "string",
+            "pattern": "^[a-z_][a-z0-9_]*$"
+          },
+          "label": {
+            "type": "string"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "terminal": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "target": {
+            "type": "object",
+            "required": [
+              "entity",
+              "field",
+              "display"
+            ],
+            "properties": {
+              "entity": {
+                "type": "string"
+              },
+              "field": {
+                "type": "string"
+              },
+              "display": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "sideEffects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "set",
+                "to"
+              ],
+              "properties": {
+                "set": {
+                  "type": "string",
+                  "pattern": "^[a-z_][a-z0-9_]*$"
+                },
+                "to": {
+                  "const": "now()"
+                }
+              }
+            }
+          },
+          "bulkMax": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "default": 25
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "policies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

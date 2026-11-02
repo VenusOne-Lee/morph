@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/model.v0.json",
+  "title": "Morph semantic model (v0)",
+  "description": "What reports may see. Written by `morph init` / `morph scan`; edit labels, exposed and pii by hand.",
+  "type": "object",
+  "required": [
+    "specVersion",
+    "source",
+    "entities",
+    "enums",
+    "joins"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "specVersion": {
+      "const": 0
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "kind",
+        "schemas"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "supabase",
+            "postgres"
+          ]
+        },
+        "schemas": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "entities": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/entity"
+      }
+    },
+    "enums": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/enum"
+      }
+    },
+    "joins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "inferred"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "inferred": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "entity": {
+      "type": "object",
+      "required": [
+        "name",
+        "schema",
+        "label",
+        "kind",
+        "primaryKey",
+        "displayField",
+        "rls",
+        "policies",
+        "exposed",
+        "fields"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_]*$"
+        },
+        "schema": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "table",
+            "view"
+          ]
+        },
+        "primaryKey": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "displayField": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rls": {
+          "enum": [
+            "rls_ok",
+            "rls_on_no_policies",
+            "rls_off"
+          ],
+          "description": "rls_off tables are blocked from reports."
+        },
+        "policies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "command",
+              "roles"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "command": {
+                "enum": [
+                  "ALL",
+                  "SELECT",
+                  "INSERT",
+                  "UPDATE",
+                  "DELETE"
+                ]
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "exposed": {
+          "type": "boolean"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/field"
+          }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": [
+        "name",
+        "label",
+        "pgType",
+        "semantic",
+        "nullable",
+        "pii",
+        "exposed",
+        "confidence",
+        "reason"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z_][a-z0-9_]*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "pgType": {
+          "type": "string"
+        },
+        "semantic": {
+          "enum": [
+            "id",
+            "fk",
+            "owner_ref",
+            "status_enum",
+            "money",
+            "date",
+            "datetime",
+            "boolean",
+            "count",
+            "percent",
+            "number",
+            "text",
+            "email",
+            "phone",
+            "sa_id_number",
+            "url",
+            "json"
+          ]
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "pii": {
+          "type": "boolean"
+        },
+        "exposed": {
+          "type": "boolean",
+          "description": "Only exposed fields can appear in reports, MCP output or AI prompts. PII starts unexposed."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reason": {
+          "type": "string"
+        },
+        "enum": {
+          "type": "string"
+        },
+        "references": {
+          "type": "object",
+          "required": [
+            "entity",
+            "field"
+          ],
+          "properties": {
+            "entity": {
+              "type": "string"
+            },
+            "field": {
+              "type": "string"
+            },
+            "inferred": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "enum": {
+      "type": "object",
+      "required": [
+        "id",
+        "values",
+        "labels",
+        "terminal",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "terminal": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "enum": [
+            "pg_enum",
+            "check",
+            "sampled"
+          ]
+        }
+      }
+    }
+  }
+}

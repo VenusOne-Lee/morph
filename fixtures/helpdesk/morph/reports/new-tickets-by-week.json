@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "new-tickets-by-week",
+  "title": "New tickets by week",
+  "why": "Tickets created in each of the last 12 weeks.",
+  "generatedBy": "new-by-week",
+  "source": "tickets",
+  "fields": [
+    "tickets.subject",
+    "week"
+  ],
+  "derived": {
+    "week": {
+      "date_trunc": {
+        "field": "tickets.created_at",
+        "unit": "week"
+      }
+    }
+  },
+  "filters": [
+    {
+      "field": "tickets.created_at",
+      "op": "last_n_days",
+      "value": 84
+    }
+  ],
+  "groupBy": [
+    "week"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "sort": [
+    {
+      "field": "week",
+      "dir": "asc"
+    }
+  ],
+  "widgets": [
+    {
+      "type": "column",
+      "view": "report",
+      "options": {
+        "weeks": 12
+      }
+    }
+  ]
+}

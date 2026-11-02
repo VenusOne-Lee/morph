@@ -1,0 +1,61 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "deals-aging",
+  "title": "Deals aging",
+  "why": "Open deals by stage and days in stage.",
+  "generatedBy": "aging-heatmap",
+  "source": "deals",
+  "fields": [
+    "deals.name",
+    "deals.stage",
+    "users.name as owner",
+    "deals.value_zar",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "heatmap",
+      "view": "report",
+      "options": {
+        "buckets": [
+          7,
+          14,
+          30
+        ],
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [
+    "deals.owner_id -> users.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "deals.stage_changed_at"
+    }
+  },
+  "filters": [
+    {
+      "field": "deals.stage",
+      "op": "not_in",
+      "value": [
+        "won",
+        "lost"
+      ]
+    }
+  ],
+  "groupBy": [
+    "deals.stage",
+    "days_in_stage"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    }
+  ],
+  "actions": [
+    "deals.owner_id",
+    "deals.stage"
+  ]
+}

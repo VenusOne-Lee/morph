@@ -1,0 +1,9 @@
+{
+  "name": "lovable-starter",
+  "description": "Typical Lovable schema: profiles, organisations, members, projects (text status), tasks (assignee).",
+  "users": {
+    "manager": { "id": "00000000-0000-4000-8002-000000000001", "name": "Amara Obi", "email": "amara@example.com" },
+    "rep": { "id": "00000000-0000-4000-8002-000000000002", "name": "Ben Carter", "email": "ben@example.com" },
+    "outsider": { "id": "00000000-0000-4000-8002-000000000004", "name": "Olu Outsider", "email": "outsider@example.com" }
+  }
+}

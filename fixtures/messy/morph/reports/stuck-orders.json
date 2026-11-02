@@ -1,0 +1,73 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "stuck-orders",
+  "title": "Stuck orders",
+  "why": "Open orders that haven't moved status in over 14 days, oldest first.",
+  "generatedBy": "stuck-records",
+  "source": "orders",
+  "fields": [
+    "orders.status",
+    "orders.total",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "title": "Stuck orders",
+      "type": "kpi"
+    },
+    {
+      "type": "table"
+    },
+    {
+      "type": "queue",
+      "view": "report",
+      "options": {
+        "threshold": 14
+      }
+    }
+  ],
+  "joins": [],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "orders.updated_at",
+      "approximate": true
+    }
+  },
+  "filters": [
+    {
+      "field": "orders.status",
+      "op": "not_in",
+      "value": [
+        "Cancelled",
+        "SHIPPED",
+        "delivered",
+        "shipped"
+      ]
+    },
+    {
+      "field": "days_in_stage",
+      "op": ">",
+      "value": 14
+    }
+  ],
+  "groupBy": [
+    "orders.status"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "orders.total"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": []
+}

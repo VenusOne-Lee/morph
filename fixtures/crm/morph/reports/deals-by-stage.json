@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/VenusOne-Lee/morph/main/packages/spec/schema/report.v0.json",
+  "specVersion": 0,
+  "id": "deals-by-stage",
+  "title": "Deals by stage",
+  "why": "Open deals in each stage, in stage order.",
+  "generatedBy": "pipeline-by-stage",
+  "source": "deals",
+  "fields": [
+    "deals.name",
+    "deals.stage",
+    "users.name as owner",
+    "deals.value_zar",
+    "days_in_stage"
+  ],
+  "widgets": [
+    {
+      "type": "bar",
+      "view": "report"
+    },
+    {
+      "type": "kanban",
+      "view": "combined"
+    },
+    {
+      "type": "table"
+    }
+  ],
+  "joins": [
+    "deals.owner_id -> users.id"
+  ],
+  "derived": {
+    "days_in_stage": {
+      "days_since": "deals.stage_changed_at"
+    }
+  },
+  "filters": [
+    {
+      "field": "deals.stage",
+      "op": "not_in",
+      "value": [
+        "won",
+        "lost"
+      ]
+    }
+  ],
+  "groupBy": [
+    "deals.stage"
+  ],
+  "groupByOptions": [
+    "owner"
+  ],
+  "measures": [
+    {
+      "fn": "count"
+    },
+    {
+      "fn": "sum",
+      "field": "deals.value_zar"
+    }
+  ],
+  "sort": [
+    {
+      "field": "days_in_stage",
+      "dir": "desc"
+    }
+  ],
+  "actions": [
+    "deals.owner_id",
+    "deals.stage"
+  ]
+}
