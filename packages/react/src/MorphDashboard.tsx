@@ -84,25 +84,32 @@ function KpiRow(props: { report: string }) {
   const stuck = open.filter((r) => isStuck(meta, r));
   const idle = open.filter((r) => meta.days && Number(r[meta.days.col]) > meta.idleDays);
   const sum = (l: typeof rows) => (meta.money ? formatMoney(l.reduce((s, r) => s + Number(r[meta.money!.col] ?? 0), 0), meta.money.currency) : String(l.length));
-  const tiles = [
-    { label: t('kpi.openCount'), value: String(open.length), sub: meta.money ? sum(open) : '' },
+  const ids = (l: typeof rows) => l.map((r) => String(r[meta.idCol]));
+  const tiles: { label: string; value: string; sub: string; bad?: boolean; ids: string[] }[] = [
+    { label: t('kpi.openCount'), value: String(open.length), sub: meta.money ? sum(open) : '', ids: ids(open) },
     ...(meta.days
       ? [
-          { label: t('kpi.stuck', { days: meta.stuckDays }), value: String(stuck.length), sub: meta.money ? sum(stuck) : '', bad: stuck.length > 0 },
-          { label: t('kpi.idleTile', { days: meta.idleDays }), value: String(idle.length), sub: meta.money ? sum(idle) : '', bad: idle.length > 0 },
+          { label: t('kpi.stuck', { days: meta.stuckDays }), value: String(stuck.length), sub: meta.money ? sum(stuck) : '', bad: stuck.length > 0, ids: ids(stuck) },
+          { label: t('kpi.idleTile', { days: meta.idleDays }), value: String(idle.length), sub: meta.money ? sum(idle) : '', bad: idle.length > 0, ids: ids(idle) },
         ]
       : []),
   ];
   return (
     <div className="morph-kpis">
       {tiles.map((k) => (
-        <div key={k.label} className="morph-kpi">
-          <div className="label">{k.label}</div>
-          <div className="value morph-num" style={'bad' in k && k.bad ? { color: 'var(--morph-bad)' } : undefined}>
+        <button
+          key={k.label}
+          type="button"
+          className="morph-kpi drill"
+          aria-label={t('kpi.drill', { label: k.label, value: `${k.value}${k.sub ? `, ${k.sub}` : ''}` })}
+          onClick={(e) => w.m.openDrill({ reportId: props.report, title: k.label, ids: k.ids, returnFocus: e.currentTarget })}
+        >
+          <div className="label">{k.label}<span className="go" aria-hidden="true">›</span></div>
+          <div className="value morph-num" style={k.bad ? { color: 'var(--morph-bad)' } : undefined}>
             {k.value}
             {k.sub && <span className="delta morph-muted" style={{ color: 'var(--morph-ink-2)' }}>{k.sub}</span>}
           </div>
-        </div>
+        </button>
       ))}
     </div>
   );

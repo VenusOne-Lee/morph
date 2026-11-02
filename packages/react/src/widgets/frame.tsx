@@ -4,7 +4,7 @@ import { useMorph, useReport } from '../context.js';
 import { Panel, Skeleton, StateMessage, ViewSwitcher } from '../components/primitives.js';
 import { describeSource, useAllowedActions } from '../helpers.js';
 import type { WidgetProps } from '../registry.js';
-import type { ReportMeta } from '../meta.js';
+import type { ReportMeta, Row } from '../meta.js';
 
 /** Shared state for every widget: rows, meta, the view and which actions the viewer may use. */
 export function useWidget(props: WidgetProps) {
@@ -21,6 +21,12 @@ export function useWidget(props: WidgetProps) {
 }
 
 export type WidgetCtx = ReturnType<typeof useWidget>;
+
+/** Opens the drill sheet on the given rows of this widget's report. */
+export function useDrill(w: WidgetCtx, props: WidgetProps) {
+  return (title: string, list: Row[], el?: HTMLElement | null) =>
+    w.m.openDrill({ reportId: props.report, title, ids: list.map((r) => String(r[w.meta.idCol])), ...(props.filters ? { filters: props.filters } : {}), actions: props.actions, returnFocus: el ?? null });
+}
 
 /** Polite live region. Returns [node, announce]. */
 export function useAnnouncer(): [ReactNode, (msg: string) => void] {

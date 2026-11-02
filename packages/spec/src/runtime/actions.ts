@@ -102,12 +102,17 @@ export function payloadFromPreview(preview: PreviewResult): ActionPayload {
   };
 }
 
-export async function listAudit(client: SupabaseLike, opts: { limit?: number } = {}): Promise<AuditEntry[]> {
-  const res = await client
+/**
+ * The action log as the viewer may see it (RLS on morph_audit decides).
+ * `table` narrows to one source table; `rowId` keeps only entries that touched that record.
+ */
+export async function listAudit(client: SupabaseLike, opts: { limit?: number; table?: string; rowId?: string } = {}): Promise<AuditEntry[]> {
+  let q = client
     .from('morph_audit')
-    .select('id,created_at,actor,actor_name,action,table_name,row_count,rows,to_value,to_display,source,undone_at,undone_by')
-    .order('created_at', { ascending: false })
-    .limit(opts.limit ?? 50);
+    .select('id,created_at,actor,actor_name,action,table_name,row_count,rows,to_value,to_display,source,undone_at,undone_by');
+  if (opts.table) q = q.eq('table_name', opts.table);
+  const res = await q.order('created_at', { ascending: false }).limit(opts.limit ?? 50);
   if (res.error) throw fromPostgrestError(res.error, { relation: 'morph_audit' });
-  return (res.data ?? []) as unknown as AuditEntry[];
+  const all = (res.data ?? []) as unknown as AuditEntry[];
+  return opts.rowId === undefined ? all : all.filter((a) => a.rows.some((r) => String(r.id) === opts.rowId));
 }

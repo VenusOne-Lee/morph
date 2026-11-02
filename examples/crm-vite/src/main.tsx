@@ -1,6 +1,6 @@
 import { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { MorphAuditLog, MorphDashboard, MorphProvider, MorphReport } from '@morph-reports/react';
+import { MorphAuditLog, MorphDashboard, MorphProvider, MorphRecord, MorphReport } from '@morph-reports/react';
 import { demo, demoClient, realClient } from './client';
 import { actions, model, reports } from './morph';
 import { applyHost } from './hosts';
@@ -38,7 +38,7 @@ function App() {
         </nav>
       </header>
     )}
-    <MorphProvider key={user} supabase={supabase} model={model} reports={reports} actions={actions} dev>
+    <MorphProvider key={user} supabase={supabase} model={model} reports={reports} actions={actions} recordHref={(_row, r) => `?page=record&report=${r.reportId}&id=${r.id}`} dev>
       <main>
         {demo && (
           <label style={{ fontSize: 13, color: '#525866' }}>
@@ -50,7 +50,15 @@ function App() {
             </select>
           </label>
         )}
-        {page === 'report' ? <MorphReport report={params.get('id') ?? 'deals-by-stage'} /> : page === 'audit' ? <MorphAuditLog /> : <MorphDashboard title="Sales" />}
+        {page === 'report' ? (
+          <MorphReport report={params.get('id') ?? 'deals-by-stage'} />
+        ) : page === 'record' ? (
+          <MorphRecord report={params.get('report') ?? 'deals-by-stage'} id={params.get('id') ?? ''} />
+        ) : page === 'audit' ? (
+          <MorphAuditLog />
+        ) : (
+          <MorphDashboard title="Sales" />
+        )}
       </main>
     </MorphProvider>
     </>

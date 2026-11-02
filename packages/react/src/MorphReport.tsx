@@ -18,7 +18,13 @@ export interface MorphReportProps {
   /** false hides all actions; a list allows only those action ids. */
   actions?: boolean | string[];
   filters?: RuntimeFilter[];
+  /**
+   * Called when a row is clicked, so you can route to your own record page.
+   * Without it, a click opens Morph's record view (details, actions, history).
+   */
   onRowClick?: (row: Row) => void;
+  /** false turns the built-in record view off. Default true. */
+  drill?: boolean;
   className?: string;
   height?: number | string;
   /** Show the `{ }` spec toggle (dev mode only by default). */
@@ -85,6 +91,15 @@ export function MorphReport(props: MorphReportProps) {
     else n.add(id);
     return n;
   });
+
+  // Table order, so the record view's previous / next walk the rows as seen.
+  const tableIds = (groupCol ? agg.groups.filter((g) => !picked || g.key === picked).flatMap((g) => sortRows(g.rows, sort)) : sortRows(shown, sort)).map((r) => String(r[meta.idCol]));
+  const drillOn = !props.onRowClick && props.drill !== false;
+  const openRow = (r: Row, el: HTMLElement | null) => {
+    if (props.onRowClick) return props.onRowClick(r);
+    if (!drillOn) return;
+    m.openDrill({ reportId: props.report, title: chips.map((c) => c.label).join(' · ') || meta.spec.title, ids: tableIds, recordId: String(r[meta.idCol]), ...(props.filters ? { filters: props.filters } : {}), actions: props.actions, returnFocus: el });
+  };
 
   const chips: { label: string; clear(): void }[] = [];
   if (picked) chips.push({ label: `${groupChoices.find((g) => g.alias === groupCol)?.label ?? ''}: ${labelOf(picked)}`, clear: () => setPicked(null) });
@@ -190,9 +205,9 @@ export function MorphReport(props: MorphReportProps) {
                           return (
                             <tr
                               key={id}
-                              className={`${selected.has(id) ? 'sel ' : ''}${fl ? `morph-flash-${fl} ` : ''}${props.onRowClick ? 'clickable' : ''}`}
+                              className={`${selected.has(id) ? 'sel ' : ''}${fl ? `morph-flash-${fl} ` : ''}${props.onRowClick || drillOn ? 'clickable' : ''}`}
                               onClick={(e) => {
-                                if (props.onRowClick && !(e.target as HTMLElement).closest('button,input,a')) props.onRowClick(r);
+                                if (!(e.target as HTMLElement).closest('button,input,a,select')) openRow(r, (e.currentTarget as HTMLElement).querySelector<HTMLElement>('.morph-rowname'));
                               }}
                             >
                               {hasActs && (
@@ -201,7 +216,11 @@ export function MorphReport(props: MorphReportProps) {
                                 </td>
                               )}
                               <td>
-                                <span style={{ fontWeight: 500 }}>{rowName(meta, r)}</span>
+                                {props.onRowClick || drillOn ? (
+                                  <button type="button" className="morph-rowname" onClick={(e) => openRow(r, e.currentTarget)}>{rowName(meta, r)}</button>
+                                ) : (
+                                  <span style={{ fontWeight: 500 }}>{rowName(meta, r)}</span>
+                                )}
                                 {meta.status && groupCol !== meta.status.col && <div className="sub">{meta.status.labels[String(r[meta.status.col])] ?? String(r[meta.status.col])}</div>}
                               </td>
                               {visibleCols.map((c) => (

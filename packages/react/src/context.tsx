@@ -21,6 +21,7 @@ const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayout
 import { makeT, type MessageKey, type T } from './i18n.js';
 import { nounFor, PreviewModal, type PreviewRequest } from './components/PreviewModal.js';
 import { Toasts, type ToastItem } from './components/Toast.js';
+import { DrillPanel, type DrillRequest, type RecordHref } from './drill/Drill.js';
 
 /* ------------------------------------------------------------------ */
 /* Report store: one per report + filters, shared by every widget      */
@@ -104,6 +105,9 @@ export interface MorphContextValue {
   refreshSource(table: string): void;
   canAct(actionId: string): boolean | null;
   openPreview(req: PreviewRequest): void;
+  /** Open the drill sheet: the records behind a number, then one record (MO-409). */
+  openDrill(req: DrillRequest): void;
+  closeDrill(): void;
   undo(auditId: string, opts?: { partial?: boolean }): Promise<UndoResult | null>;
   flash: Map<string, 'apply' | 'undo'>;
   owners(entity: string, field: string, display: string | null): OwnerOption[] | null;
@@ -133,6 +137,11 @@ export interface MorphProviderProps {
   config?: Partial<MorphConfig>;
   messages?: Partial<Record<MessageKey, string>>;
   onAction?: (e: ActionEvent) => void;
+  /**
+   * A link to your own page for a record. When set, the record view shows "Open in app".
+   * Clicking a row still opens Morph's record view; pass `onRowClick` to a report to route instead.
+   */
+  recordHref?: RecordHref;
   injectStyles?: boolean;
   /** Dev mode shows spec warnings and the `{ }` spec panel. */
   dev?: boolean;
@@ -156,6 +165,8 @@ export function MorphProvider(props: MorphProviderProps) {
   const [ownerLists, setOwnerLists] = useState<Record<string, OwnerOption[]>>({});
   const ownersAsked = useRef(new Set<string>());
   const [preview, setPreview] = useState<PreviewRequest | null>(null);
+  const [drill, setDrill] = useState<DrillRequest | null>(null);
+  const closeDrill = useCallback(() => setDrill(null), []);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [flash, setFlash] = useState(new Map<string, 'apply' | 'undo'>());
   const [viewer, setViewer] = useState<{ id: string | null; name: string | null }>({ id: null, name: null });
@@ -207,6 +218,7 @@ export function MorphProvider(props: MorphProviderProps) {
     ownersAsked.current.clear();
     setPerm({});
     setOwnerLists({});
+    setDrill(null);
   }, [props.supabase, project]);
 
   const meta = useCallback(
@@ -357,18 +369,21 @@ export function MorphProvider(props: MorphProviderProps) {
       refreshSource,
       canAct,
       openPreview: setPreview,
+      openDrill: setDrill,
+      closeDrill,
       undo,
       flash,
       owners,
       dev: !!props.dev,
     }),
-    [project, props.supabase, config, t, viewer, meta, store, refreshSource, canAct, undo, flash, owners, props.dev],
+    [project, props.supabase, config, t, viewer, meta, store, refreshSource, canAct, closeDrill, undo, flash, owners, props.dev],
   );
 
   return (
     <Ctx.Provider value={value}>
       <div ref={rootRef} className={`morph-root${props.className ? ` ${props.className}` : ''}`} data-morph-theme={hostTheme.source} style={hostTheme.vars as CSSProperties}>
         {props.children}
+        {drill && <DrillPanel request={drill} onClose={closeDrill} paused={!!preview} recordHref={props.recordHref} />}
         {preview && <PreviewModal request={preview} onClose={() => setPreview(null)} onApplied={onApplied} onFailed={(e) => onActionRef.current?.({ type: 'failed', action: preview.actionId, rows: preview.ids, error: e })} />}
         <Toasts items={toasts} onDismiss={dismissToast} t={t} />
       </div>
