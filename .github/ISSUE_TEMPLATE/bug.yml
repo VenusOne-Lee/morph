@@ -1,0 +1,24 @@
+name: Bug report
+description: Something in Morph doesn't work as described
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Found a way to read or change rows that RLS should block? Don't open an issue. Follow SECURITY.md instead."
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you saw instead.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `npx morph-reports doctor`
+      render: text
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      placeholder: morph-reports 0.1.0, @morph-reports/react 0.1.0, supabase-js 2.x, React 18

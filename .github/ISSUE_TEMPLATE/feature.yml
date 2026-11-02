@@ -1,0 +1,15 @@
+name: Feature request
+description: A report, widget or action you'd like Morph to support
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the job your users need done, not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How might Morph help?

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.0.3/schema.json",
+  "changelog": "@changesets/cli/changelog",
+  "commit": false,
+  "fixed": [["@morph-reports/spec", "@morph-reports/sql", "@morph-reports/react", "@morph-reports/mcp", "morph-reports"]],
+  "access": "public",
+  "baseBranch": "main",
+  "ignore": ["@morph-reports/testkit", "morph-example-crm-vite"]
+}

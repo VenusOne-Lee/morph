@@ -1,0 +1,36 @@
+{
+  "name": "morph-monorepo",
+  "private": true,
+  "description": "Reports your customers can act on, with undo.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "fixtures:up": "node scripts/fixtures.mjs up",
+    "fixtures:reset": "node scripts/fixtures.mjs reset",
+    "test:integration": "pnpm -r --filter \"./packages/**\" run test:integration",
+    "test:gate3": "pnpm --filter @morph-reports/sql run test:gate3",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.9",
+    "@eslint/js": "^9.14.0",
+    "@types/node": "^22.9.0",
+    "eslint": "^9.14.0",
+    "prettier": "^3.3.3",
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.14.0",
+    "vitest": "^2.1.5",
+    "pg": "^8.13.1",
+    "@types/pg": "^8.11.10"
+  },
+  "type": "module"
+}
