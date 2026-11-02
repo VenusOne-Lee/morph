@@ -1,0 +1,27 @@
+{
+  "name": "@morph-reports/mcp",
+  "version": "0.1.0",
+  "description": "Morph MCP server (stdio): list and run reports, preview and apply actions, undo. Runs as the signed-in user through Supabase RLS.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": { "morph-mcp": "./dist/bin.js" },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@morph-reports/spec": "workspace:*",
+    "@supabase/supabase-js": "^2.118.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@morph-reports/testkit": "workspace:*"
+  }
+}
