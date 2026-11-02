@@ -18,7 +18,7 @@ export interface StackedBar {
 const ACC = 'var(--morph-accent)';
 const BAD = 'var(--morph-bad)';
 const GOOD = 'var(--morph-good)';
-const MUTED = '#cfd6e0';
+const MUTED = 'var(--morph-series-2)';
 
 function onKeyActivate(fn: () => void) {
   return (e: React.KeyboardEvent) => {
@@ -75,8 +75,8 @@ export function StackedBars(props: { bars: StackedBar[]; format(n: number): stri
                   {b.sub}
                 </text>
               )}
-              <rect x={x0} y={y + 4} width={Math.max(0, sx(b.a) - x0)} height={18} rx={4} fill={ACC} />
-              <rect x={sx(b.a)} y={y + 4} width={Math.max(0, sx(b.a + b.b) - sx(b.a))} height={18} rx={4} fill={BAD} />
+              <rect className="mk" x={x0} y={y + 4} width={Math.max(0, sx(b.a) - x0)} height={18} rx={4} fill={ACC} />
+              <rect className="mk" x={sx(b.a)} y={y + 4} width={Math.max(0, sx(b.a + b.b) - sx(b.a))} height={18} rx={4} fill={BAD} />
               <text className="val" x={sx(b.a + b.b) + 8} y={y + 18}>
                 {props.format(b.a + b.b)}
               </text>
@@ -116,7 +116,7 @@ export function ColumnChart(props: { points: { key: string; label: string; value
           const above = props.target !== undefined && p.value >= props.target;
           return (
             <g key={p.key}>
-              <rect x={cx - bw / 2} y={sy(p.value)} width={bw} height={y0 - sy(p.value)} rx={4} fill={above ? GOOD : ACC} opacity={p.partial ? 0.45 : 1} />
+              <rect className="mk" x={cx - bw / 2} y={sy(p.value)} width={bw} height={y0 - sy(p.value)} rx={4} fill={above ? GOOD : ACC} opacity={p.partial ? 0.45 : 1} />
               <text className="val" x={cx} y={sy(p.value) - 6} textAnchor="middle">
                 {props.format(p.value)}
               </text>
@@ -152,10 +152,10 @@ export function Funnel(props: { steps: { key: string; label: string; count: numb
           return (
             <g key={s.key} className="bar" role="button" tabIndex={0} aria-label={`${s.label}, ${s.count}, ${s.value}`} onClick={select} onKeyDown={onKeyActivate(select)}>
               <rect x={300 - w / 2} y={8 + i * 56} width={w} height={46} rx={8} fill={ACC} opacity={0.45 + 0.55 * ((i + 1) / props.steps.length)} />
-              <text x={300} y={8 + i * 56 + 20} textAnchor="middle" style={{ fill: '#fff', fontWeight: 600 }}>
+              <text x={300} y={8 + i * 56 + 20} textAnchor="middle" style={{ fill: 'var(--morph-accent-ink)', fontWeight: 600 }}>
                 {s.label} · {s.count}
               </text>
-              <text x={300} y={8 + i * 56 + 37} textAnchor="middle" style={{ fill: '#fff', fontSize: 11.5 }}>
+              <text x={300} y={8 + i * 56 + 37} textAnchor="middle" style={{ fill: 'var(--morph-accent-ink)', fontSize: 11.5 }}>
                 {s.value}
               </text>
             </g>
@@ -196,8 +196,8 @@ export function WorkloadBars(props: { owners: { key: string; label: string; open
               <text className="lbl" x={16} y={y + 17} style={over ? { fill: BAD } : undefined}>
                 {o.label}
               </text>
-              <rect x={x0} y={y + 4} width={sx(o.open) - x0} height={18} rx={4} fill={over ? 'var(--morph-bad-soft)' : MUTED} />
-              <rect x={x0} y={y + 4} width={sx(o.stuck) - x0} height={18} rx={4} fill={over ? BAD : ACC} />
+              <rect className="mk" x={x0} y={y + 4} width={sx(o.open) - x0} height={18} rx={4} fill={over ? 'var(--morph-bad-soft)' : MUTED} />
+              <rect className="mk" x={x0} y={y + 4} width={sx(o.stuck) - x0} height={18} rx={4} fill={over ? BAD : ACC} />
               <text className="val" x={sx(o.open) + 8} y={y + 18} style={over ? { fill: BAD } : undefined}>
                 {o.open}
                 {o.stuck ? ` ${o.stuckLabel}` : ''}
@@ -232,10 +232,10 @@ export function Heatmap(props: { rows: { key: string; label: string }[]; buckets
             const n = props.counts[ri]?.[bi] ?? 0;
             const late = bi >= props.lateFrom;
             const alpha = n ? 0.15 + 0.55 * (n / max) : 0;
-            const bg = n ? (late ? `rgba(194,57,47,${alpha})` : `rgba(45,91,234,${alpha})`) : 'var(--morph-sunken)';
+            const bg = n ? `color-mix(in srgb, var(${late ? '--morph-bad' : '--morph-accent'}) ${Math.round(alpha * 100)}%, var(--morph-surface))` : 'var(--morph-sunken)';
             const on = props.active?.row === r.key && props.active.bucket === bi;
             return (
-              <button key={b} type="button" aria-pressed={on} aria-label={`${r.label}, ${b}: ${n}`} style={{ background: bg, outline: on ? '2px solid var(--morph-ink)' : undefined, color: n ? 'var(--morph-ink)' : 'var(--morph-muted)' }} onClick={() => props.onSelect?.(r.key, bi)}>
+              <button key={b} type="button" aria-pressed={on} aria-label={`${r.label}, ${b}: ${n}`} style={{ background: bg, outline: on ? '2px solid var(--morph-ink)' : undefined, color: !n ? 'var(--morph-muted)' : !late && alpha > 0.5 ? 'var(--morph-accent-ink)' : 'var(--morph-ink)' }} onClick={() => props.onSelect?.(r.key, bi)}>
                 {n}
               </button>
             );
@@ -277,7 +277,7 @@ export function Histogram(props: { buckets: { label: string; count: number; late
           const select = () => props.onSelect?.(props.active === i ? null : i);
           return (
             <g key={b.label} className={`bar${props.active != null && props.active !== i ? ' dim' : ''}`} role="button" tabIndex={0} aria-pressed={props.active === i} aria-label={`${b.label}: ${b.count}`} onClick={select} onKeyDown={onKeyActivate(select)}>
-              <rect x={i * w + 14} y={130 - h} width={w - 28} height={h} rx={5} fill={b.late ? BAD : ACC} />
+              <rect className="mk" x={i * w + 14} y={130 - h} width={w - 28} height={h} rx={4} fill={b.late ? BAD : ACC} />
               <text className="val" x={i * w + w / 2} y={124 - h} textAnchor="middle">
                 {b.count}
               </text>

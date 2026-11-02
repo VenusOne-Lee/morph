@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { MorphAuditLog, MorphDashboard, MorphProvider, MorphReport } from '@morph-reports/react';
 import { demo, demoClient, realClient } from './client';
 import { actions, model, reports } from './morph';
+import { applyHost } from './hosts';
+
+const host = applyHost(new URLSearchParams(location.search).get('host'));
 
 const DEMO_USERS = [
   { key: 'manager', label: 'Thandi M. (sales manager)' },
@@ -25,6 +28,16 @@ function App() {
   if (!signedIn) return <SignIn onDone={() => setSignedIn(true)} />;
 
   return (
+    <>
+    {host.key !== 'plain' && (
+      <header className="host-bar">
+        <b>{host.name}</b>
+        <nav>
+          <button type="button" className="host-btn ghost">Invite</button>
+          <button type="button" className="host-btn">New deal</button>
+        </nav>
+      </header>
+    )}
     <MorphProvider key={user} supabase={supabase} model={model} reports={reports} actions={actions} dev>
       <main>
         {demo && (
@@ -40,6 +53,7 @@ function App() {
         {page === 'report' ? <MorphReport report={params.get('id') ?? 'deals-by-stage'} /> : page === 'audit' ? <MorphAuditLog /> : <MorphDashboard title="Sales" />}
       </main>
     </MorphProvider>
+    </>
   );
 }
 

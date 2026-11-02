@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react';
 import {
   actionInfo,
   compileQuery,
@@ -14,7 +14,10 @@ import {
   type UndoResult,
 } from '@morph-reports/spec';
 import { buildMeta, DEFAULT_CONFIG, type MorphConfig, type ReportMeta, type Row } from './meta.js';
-import { injectStyles, themeVars, type MorphTheme } from './styles.js';
+import { injectStyles } from './styles.js';
+import { resolveTheme, type HostTheme, type MorphTheme, type ThemePreset } from './theme.js';
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 import { makeT, type MessageKey, type T } from './i18n.js';
 import { nounFor, PreviewModal, type PreviewRequest } from './components/PreviewModal.js';
 import { Toasts, type ToastItem } from './components/Toast.js';
@@ -120,7 +123,13 @@ export interface MorphProviderProps {
   model: unknown;
   reports: unknown[];
   actions?: unknown;
-  theme?: MorphTheme;
+  /**
+   * How reports pick up the app's look. Default `auto`: read the host page (distinctUI,
+   * shadcn/Tailwind variables, brand variables, the surrounding font) and fall back to
+   * Morph's defaults. `morph` turns detection off, `distinctui` forces that preset, and an
+   * object overrides single tokens on top: `{ accent: '#e11d48', barRadius: '2px' }`.
+   */
+  theme?: MorphTheme | ThemePreset;
   config?: Partial<MorphConfig>;
   messages?: Partial<Record<MessageKey, string>>;
   onAction?: (e: ActionEvent) => void;
@@ -150,12 +159,28 @@ export function MorphProvider(props: MorphProviderProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [flash, setFlash] = useState(new Map<string, 'apply' | 'undo'>());
   const [viewer, setViewer] = useState<{ id: string | null; name: string | null }>({ id: null, name: null });
-  const [vars, setVars] = useState<Record<string, string>>({});
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [hostTheme, setHostTheme] = useState<HostTheme>({ source: 'none', darkHost: false, vars: {} });
+  const themeKey = JSON.stringify(props.theme ?? null);
 
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
     if (props.injectStyles !== false) injectStyles();
-    setVars(themeVars(props.theme));
-  }, [props.theme, props.injectStyles]);
+    const read = () => {
+      const next = resolveTheme(props.theme, rootRef.current?.parentElement);
+      setHostTheme((prev) => (JSON.stringify(prev) === JSON.stringify(next) ? prev : next));
+    };
+    read();
+    // Host styles can land after Morph mounts (lazy CSS, web fonts, a theme class on <html>).
+    const mo = typeof MutationObserver === 'undefined' ? null : new MutationObserver(read);
+    mo?.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
+    mo?.observe(document.head, { childList: true });
+    window.addEventListener('load', read);
+    void document.fonts?.ready.then(read);
+    return () => {
+      mo?.disconnect();
+      window.removeEventListener('load', read);
+    };
+  }, [themeKey, props.injectStyles]);
 
   useEffect(() => {
     let live = true;
@@ -342,7 +367,7 @@ export function MorphProvider(props: MorphProviderProps) {
 
   return (
     <Ctx.Provider value={value}>
-      <div className={`morph-root${props.className ? ` ${props.className}` : ''}`} style={vars as CSSProperties}>
+      <div ref={rootRef} className={`morph-root${props.className ? ` ${props.className}` : ''}`} data-morph-theme={hostTheme.source} style={hostTheme.vars as CSSProperties}>
         {props.children}
         {preview && <PreviewModal request={preview} onClose={() => setPreview(null)} onApplied={onApplied} onFailed={(e) => onActionRef.current?.({ type: 'failed', action: preview.actionId, rows: preview.ids, error: e })} />}
         <Toasts items={toasts} onDismiss={dismissToast} t={t} />
