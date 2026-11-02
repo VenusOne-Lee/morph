@@ -20,11 +20,11 @@ const BAD = 'var(--morph-bad)';
 const GOOD = 'var(--morph-good)';
 const MUTED = 'var(--morph-series-2)';
 
-function onKeyActivate(fn: () => void) {
+function onKeyActivate(fn: (el: HTMLElement | null) => void) {
   return (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      fn();
+      fn(e.currentTarget as unknown as HTMLElement);
     }
   };
 }
@@ -89,7 +89,7 @@ export function StackedBars(props: { bars: StackedBar[]; format(n: number): stri
 }
 
 /** Columns per period with an optional dashed target line (MO-507). */
-export function ColumnChart(props: { points: { key: string; label: string; value: number; partial?: boolean }[]; target?: number; format(n: number): string; title: string; targetLabel: string; toDateLabel: string }) {
+export function ColumnChart(props: { points: { key: string; label: string; value: number; partial?: boolean }[]; target?: number; format(n: number): string; title: string; targetLabel: string; toDateLabel: string; onSelect?(key: string, el: HTMLElement | null): void }) {
   const { points } = props;
   const max = Math.max(1, props.target ?? 0, ...points.map((p) => p.value));
   const ticks = niceTicks(max);
@@ -102,7 +102,7 @@ export function ColumnChart(props: { points: { key: string; label: string; value
   const sy = (v: number) => y0 - (v / top) * (y0 - 16);
   return (
     <div className="morph-chart">
-      <svg viewBox={`0 0 960 ${H}`} role="img" aria-label={`${props.title}: ${points.map((p) => `${p.label} ${props.format(p.value)}`).join(', ')}`}>
+      <svg viewBox={`0 0 960 ${H}`} role={props.onSelect ? 'group' : 'img'} aria-label={props.onSelect ? props.title : `${props.title}: ${points.map((p) => `${p.label} ${props.format(p.value)}`).join(', ')}`}>
         {ticks.map((tk) => (
           <g key={tk}>
             <line className="grid" x1={left} x2={left + w} y1={sy(tk)} y2={sy(tk)} />
@@ -114,8 +114,12 @@ export function ColumnChart(props: { points: { key: string; label: string; value
         {points.map((p, i) => {
           const cx = left + (w / points.length) * (i + 0.5);
           const above = props.target !== undefined && p.value >= props.target;
+          const select = (el: HTMLElement | null) => props.onSelect?.(p.key, el);
+          const act = props.onSelect
+            ? { className: 'bar', role: 'button', tabIndex: 0, 'aria-label': `${p.label}${p.partial ? ` ${props.toDateLabel}` : ''}, ${props.format(p.value)}`, onClick: (e: React.MouseEvent) => select(e.currentTarget as unknown as HTMLElement), onKeyDown: onKeyActivate(select) }
+            : {};
           return (
-            <g key={p.key}>
+            <g key={p.key} {...act}>
               <rect className="mk" x={cx - bw / 2} y={sy(p.value)} width={bw} height={y0 - sy(p.value)} rx={4} fill={above ? GOOD : ACC} opacity={p.partial ? 0.45 : 1} />
               <text className="val" x={cx} y={sy(p.value) - 6} textAnchor="middle">
                 {props.format(p.value)}
@@ -141,16 +145,16 @@ export function ColumnChart(props: { points: { key: string; label: string; value
 }
 
 /** Centered bars per stage, width by count (MO-508). */
-export function Funnel(props: { steps: { key: string; label: string; count: number; value: string }[]; title: string; onSelect?(key: string): void }) {
+export function Funnel(props: { steps: { key: string; label: string; count: number; value: string }[]; title: string; onSelect?(key: string, el: HTMLElement | null): void }) {
   const max = Math.max(1, ...props.steps.map((s) => s.count));
   return (
     <div className="morph-chart">
       <svg viewBox={`0 0 600 ${props.steps.length * 56 + 8}`} role="group" aria-label={props.title} style={{ minWidth: 280 }}>
         {props.steps.map((s, i) => {
           const w = 120 + (s.count / max) * 440;
-          const select = () => props.onSelect?.(s.key);
+          const select = (el: HTMLElement | null) => props.onSelect?.(s.key, el);
           return (
-            <g key={s.key} className="bar" role="button" tabIndex={0} aria-label={`${s.label}, ${s.count}, ${s.value}`} onClick={select} onKeyDown={onKeyActivate(select)}>
+            <g key={s.key} className="bar" role="button" tabIndex={0} aria-label={`${s.label}, ${s.count}, ${s.value}`} onClick={(e) => select(e.currentTarget as unknown as HTMLElement)} onKeyDown={onKeyActivate(select)}>
               <rect x={300 - w / 2} y={8 + i * 56} width={w} height={46} rx={8} fill={ACC} opacity={0.45 + 0.55 * ((i + 1) / props.steps.length)} />
               <text x={300} y={8 + i * 56 + 20} textAnchor="middle" style={{ fill: 'var(--morph-accent-ink)', fontWeight: 600 }}>
                 {s.label} · {s.count}
@@ -167,7 +171,7 @@ export function Funnel(props: { steps: { key: string; label: string; count: numb
 }
 
 /** Bars per owner with stuck portion and a dashed cap line (MO-509). */
-export function WorkloadBars(props: { owners: { key: string; label: string; open: number; stuck: number; stuckLabel: string }[]; cap: number; title: string; capLabel: string; onSelect?(key: string): void }) {
+export function WorkloadBars(props: { owners: { key: string; label: string; open: number; stuck: number; stuckLabel: string }[]; cap: number; title: string; capLabel: string; onSelect?(key: string, el: HTMLElement | null): void }) {
   const max = Math.max(props.cap + 2, ...props.owners.map((o) => o.open));
   const ticks = niceTicks(max, 4);
   const top = ticks[ticks.length - 1]!;
@@ -190,9 +194,9 @@ export function WorkloadBars(props: { owners: { key: string; label: string; open
         {props.owners.map((o, i) => {
           const y = 8 + i * rh;
           const over = o.open > props.cap;
-          const select = () => props.onSelect?.(o.key);
+          const select = (el: HTMLElement | null) => props.onSelect?.(o.key, el);
           return (
-            <g key={o.key} className="bar" role="button" tabIndex={0} aria-label={`${o.label}, ${o.open} open, ${o.stuck} stuck${over ? ', over cap' : ''}`} onClick={select} onKeyDown={onKeyActivate(select)}>
+            <g key={o.key} className="bar" role="button" tabIndex={0} aria-label={`${o.label}, ${o.open} open, ${o.stuck} stuck${over ? ', over cap' : ''}`} onClick={(e) => select(e.currentTarget as unknown as HTMLElement)} onKeyDown={onKeyActivate(select)}>
               <text className="lbl" x={16} y={y + 17} style={over ? { fill: BAD } : undefined}>
                 {o.label}
               </text>
@@ -215,7 +219,7 @@ export function WorkloadBars(props: { owners: { key: string; label: string; open
 }
 
 /** Stage × age bucket grid; every cell is a button (MO-510). */
-export function Heatmap(props: { rows: { key: string; label: string }[]; buckets: string[]; counts: number[][]; lateFrom: number; onSelect?(row: string, bucket: number): void; active?: { row: string; bucket: number } | null; title: string }) {
+export function Heatmap(props: { rows: { key: string; label: string }[]; buckets: string[]; counts: number[][]; lateFrom: number; onSelect?(row: string, bucket: number, el: HTMLElement | null): void; active?: { row: string; bucket: number } | null; title: string }) {
   const max = Math.max(1, ...props.counts.flat());
   return (
     <div className="morph-heat" role="group" aria-label={props.title} style={{ gridTemplateColumns: `minmax(80px,auto) repeat(${props.buckets.length}, minmax(44px,1fr))` }}>
@@ -235,7 +239,7 @@ export function Heatmap(props: { rows: { key: string; label: string }[]; buckets
             const bg = n ? `color-mix(in srgb, var(${late ? '--morph-bad' : '--morph-accent'}) ${Math.round(alpha * 100)}%, var(--morph-surface))` : 'var(--morph-sunken)';
             const on = props.active?.row === r.key && props.active.bucket === bi;
             return (
-              <button key={b} type="button" aria-pressed={on} aria-label={`${r.label}, ${b}: ${n}`} style={{ background: bg, outline: on ? '2px solid var(--morph-ink)' : undefined, color: !n ? 'var(--morph-muted)' : !late && alpha > 0.5 ? 'var(--morph-accent-ink)' : 'var(--morph-ink)' }} onClick={() => props.onSelect?.(r.key, bi)}>
+              <button key={b} type="button" aria-pressed={on} aria-label={`${r.label}, ${b}: ${n}`} style={{ background: bg, outline: on ? '2px solid var(--morph-ink)' : undefined, color: !n ? 'var(--morph-muted)' : !late && alpha > 0.5 ? 'var(--morph-accent-ink)' : 'var(--morph-ink)' }} onClick={(e) => props.onSelect?.(r.key, bi, e.currentTarget)}>
                 {n}
               </button>
             );

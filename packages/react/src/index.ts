@@ -5,6 +5,8 @@ export type { MorphReportProps } from './MorphReport.js';
 export { MorphDashboard, ViewerLine } from './MorphDashboard.js';
 export type { MorphDashboardProps } from './MorphDashboard.js';
 export { MorphAuditLog } from './MorphAuditLog.js';
+export { MorphRecord } from './drill/Drill.js';
+export type { MorphRecordProps, DrillRequest, RecordHref } from './drill/Drill.js';
 export type { MorphAuditLogProps } from './MorphAuditLog.js';
 export { describeSource, leastLoaded, useAllowedActions } from './helpers.js';
 export { registerWidget, getWidget, registeredWidgets } from './registry.js';

@@ -3,7 +3,7 @@ import { isOpen, isStuck, rowName, type Row } from '../meta.js';
 import { WorkloadBars } from '../charts/index.js';
 import { initials, StateMessage } from '../components/primitives.js';
 import type { WidgetProps } from '../registry.js';
-import { useAnnouncer, useWidget, WidgetFrame } from './frame.js';
+import { useAnnouncer, useDrill, useWidget, WidgetFrame } from './frame.js';
 
 export interface OwnerLoad {
   id: string;
@@ -40,6 +40,7 @@ export function Balancer(props: WidgetProps) {
   const acting = w.view !== 'report' && !!w.allowed.owner;
   const cap = meta.ownerCap;
   const loads = ownerLoads(w);
+  const drill = useDrill(w, props);
 
   if (!meta.owner) return <WidgetFrame w={w} widget={props}><StateMessage title={t('error.generic')} /></WidgetFrame>;
 
@@ -62,6 +63,10 @@ export function Balancer(props: WidgetProps) {
       cap={cap}
       capLabel={t('balancer.cap', { cap })}
       owners={loads.map((l) => ({ key: l.id, label: l.name, open: l.open.length, stuck: l.stuck.length, stuckLabel: t('balancer.stuck', { count: l.stuck.length }) }))}
+      onSelect={(key, el) => {
+        const l = loads.find((x) => x.id === key);
+        if (l) drill(l.name, l.open, el);
+      }}
     />
   );
   if (!acting) return <WidgetFrame w={w} widget={props}>{chart}</WidgetFrame>;

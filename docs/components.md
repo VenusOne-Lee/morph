@@ -14,11 +14,14 @@ npm i @morph-reports/react
 | `config` | `{ stuckDays, idleDays, ownerCap, rowCap, locale }`. Defaults 14, 30, 5, 50 000, `en-ZA`. |
 | `messages` | Override any string from `locales/en.json`. |
 | `onAction` | Called after apply, undo or failure. |
+| `recordHref` | `(row, { reportId, table, id }) => url`. Adds "Open in app" to the record view, linking to your own page for that record. |
 | `dev` | Shows the `{ }` spec panel and spec warnings. |
 
 ## `<MorphReport report="id" />`
 
-Header with the source line, group and stuck toggles, a stacked bar chart you can click to filter, a grouped table with totals, aging bars, row actions and a bulk bar. Props: `view`, `actions` (`false` or a list of action ids), `filters`, `onRowClick`, `height`, `showSpec`.
+Header with the source line, group and stuck toggles, a stacked bar chart you can click to filter, a grouped table with totals, aging bars, row actions and a bulk bar. Props: `view`, `actions` (`false` or a list of action ids), `filters`, `onRowClick`, `drill`, `height`, `showSpec`.
+
+Clicking a bar filters the table. Clicking a row (or its name, by keyboard) opens the record view. Pass `onRowClick` to route to your own record page instead, or `drill={false}` to turn the record view off.
 
 ## `<MorphDashboard />`
 
@@ -34,6 +37,24 @@ Register your own:
 import { registerWidget } from '@morph-reports/react';
 registerWidget('timeline', MyTimeline);
 ```
+
+## Drill-down and the record view
+
+Every number on a dashboard leads to the rows behind it, and every row leads to the record.
+
+- **KPI tiles** (dashboard row and `KpiWidget`), **funnel steps**, **heatmap cells**, **workload bars** and **columns** open a side sheet listing the records behind them, oldest first, with the count and total.
+- Pick a row to open the **record view**: status, owner and stuck badges, value and days in stage, the other report fields, **Move to** and **Reassign to** with the same preview, checks and undo as everywhere else, and a **History** of Morph actions on that record with Undo while the window is open.
+- Previous and next walk the list without going back. Escape goes back to the list, then closes and returns focus to what you clicked.
+- The sheet reads the same cached rows as the widget you clicked, through the report's view and the viewer's RLS. It never fetches columns the report doesn't have, so PII stays off unless the report includes it. A record the viewer can no longer see says so.
+- Actions are hidden when the viewer can't use them, and `actions={false}` on the widget or report carries through.
+
+To put one record on a page of your own:
+
+```tsx
+<MorphRecord report="deals-by-stage" id={dealId} />
+```
+
+From your own code, `useMorph().openDrill({ reportId, title, ids?, recordId? })` opens the sheet.
 
 ## `<MorphAuditLog />` and `<ViewerLine />`
 
@@ -66,4 +87,4 @@ The root element carries `data-morph-theme` (`distinctui`, `shadcn`, `brand-vars
 
 ## Accessibility
 
-Every chart bar and heatmap cell is a button with a label. Drag and drop has a click and keyboard path. Picks and results are announced to screen readers. The preview is a focus-trapped dialog that returns focus where it came from. Component tests run axe on the CRM fixture.
+Every chart bar and heatmap cell is a button with a label. Drag and drop has a click and keyboard path. Picks and results are announced to screen readers. The preview and the drill sheet are focus-trapped dialogs that return focus where they came from; KPI tiles, chart marks and table row names are buttons. Component tests run axe on the CRM fixture.

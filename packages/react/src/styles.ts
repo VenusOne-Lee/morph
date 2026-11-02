@@ -193,6 +193,64 @@ export const MORPH_CSS = /* css */ `
 .morph-avatar{width:26px;height:26px;border-radius:50%;background:var(--morph-accent-soft);color:var(--morph-accent-text);display:grid;place-items:center;font-size:11.5px;font-weight:600}
 .morph-suggest{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--morph-line);font-size:13.5px}
 .morph-suggest:last-child{border-bottom:0}
+.morph-kpi.drill{appearance:none;font:inherit;text-align:left;color:inherit;cursor:pointer;width:100%;transition:border-color var(--morph-fast),box-shadow var(--morph-fast)}
+.morph-kpi.drill:hover{border-color:color-mix(in srgb,var(--morph-accent) 45%,var(--morph-line));box-shadow:var(--morph-shadow)}
+.morph-kpi .go{float:right;color:var(--morph-muted);font-size:16px;line-height:1;transition:transform var(--morph-fast)}
+.morph-kpi.drill:hover .go{color:var(--morph-accent-text);transform:translateX(2px)}
+.morph-rowname{appearance:none;border:0;background:none;padding:0;font:inherit;font-weight:500;color:var(--morph-ink);cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px}
+.morph-table tr.clickable:hover td{background:color-mix(in srgb,var(--morph-sunken) 70%,var(--morph-surface))}
+.morph-table tr.clickable:hover .morph-rowname,.morph-rowname:focus-visible{text-decoration-color:currentColor}
+
+.morph-drill-overlay{position:fixed;inset:0;background:color-mix(in srgb,var(--morph-ink) 28%,transparent);display:flex;justify-content:flex-end;z-index:900;animation:morph-fade var(--morph-base) ease-out}
+.morph-drill{background:var(--morph-surface);width:min(600px,100%);height:100%;display:flex;flex-direction:column;box-shadow:var(--morph-shadow-modal);color:var(--morph-ink);font-family:var(--morph-sans);animation:morph-slide var(--morph-base) ease-out}
+.morph-drill-head{padding:14px 22px 16px;border-bottom:1px solid var(--morph-line);display:grid;gap:10px}
+.morph-drill-nav{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:28px}
+.morph-drill-back{margin-left:-10px;color:var(--morph-ink-2)}
+.morph-drill-title{font-size:21px;font-weight:600;letter-spacing:-.02em;outline:none}
+.morph-drill-sub{font-size:13.5px;color:var(--morph-ink-2);margin-top:2px}
+.morph-drill-tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.morph-drill-owner{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--morph-ink-2)}
+.morph-drill-owner .morph-avatar{width:22px;height:22px;font-size:10.5px}
+.morph-drill-body{flex:1;overflow-y:auto;padding:6px 22px 22px}
+.morph-drill-foot{padding:10px 22px;border-top:1px solid var(--morph-line);font-size:12px;color:var(--morph-muted)}
+.morph-drill-list{list-style:none;margin:0 -10px;padding:0}
+.morph-drill-list li{border-bottom:1px solid var(--morph-line)}
+.morph-drill-list li:last-child{border-bottom:0}
+.morph-drill-row{appearance:none;border:0;background:none;font:inherit;color:inherit;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto auto 14px;gap:14px;align-items:center;padding:11px 10px;text-align:left;cursor:pointer;border-radius:var(--morph-radius)}
+.morph-drill-row:hover{background:var(--morph-sunken)}
+.morph-drill-row .name{display:grid;min-width:0}
+.morph-drill-row .name b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.morph-drill-row .sub{font-size:12.5px;color:var(--morph-muted)}
+.morph-drill-row .val{font-family:var(--morph-mono);font-size:13px;text-align:right}
+.morph-drill-row .morph-age .track{width:56px}
+.morph-drill-row .chev{color:var(--morph-muted);font-size:18px;line-height:1}
+.morph-record{display:grid;gap:22px;padding-top:16px}
+.morph-record-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.morph-record-stats>div{border:1px solid var(--morph-line);border-radius:var(--morph-radius-lg);padding:12px 14px}
+.morph-record-stats .label{font-size:12.5px;color:var(--morph-ink-2)}
+.morph-record-stats .value{font:600 24px var(--morph-mono);letter-spacing:-.02em;margin-top:2px}
+.morph-record-stats .value.bad{color:var(--morph-bad)}
+.morph-record-h{font-size:12px;font-family:var(--morph-mono);text-transform:uppercase;letter-spacing:.06em;font-weight:500;color:var(--morph-ink-2);margin:0 0 10px}
+.morph-record-act{background:var(--morph-sunken);border-radius:var(--morph-radius-lg);padding:14px 16px}
+.morph-record-actrow{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center}
+.morph-record-actrow+.morph-record-actrow{margin-top:8px}
+.morph-record-actrow label{font-size:13px;color:var(--morph-ink-2)}
+.morph-record-actrow .morph-select{width:100%;min-height:34px}
+.morph-record-dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 20px}
+.morph-record-dl>div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--morph-line);font-size:13.5px}
+.morph-record-dl dt{color:var(--morph-muted)}
+.morph-record-dl dd{margin:0;text-align:right;font-weight:500;overflow-wrap:anywhere}
+.morph-record-dl dd.morph-num{font-family:var(--morph-mono);font-weight:400}
+.morph-timeline{list-style:none;margin:0;padding:0;display:grid}
+.morph-timeline li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 0;font-size:13.5px;position:relative}
+.morph-timeline li .dot{width:8px;height:8px;border-radius:50%;background:var(--morph-accent);margin-top:7px;justify-self:center}
+.morph-timeline li:not(:last-child)::before{content:"";position:absolute;left:6.5px;top:22px;bottom:-6px;width:1px;background:var(--morph-line)}
+.morph-timeline li.undone{color:var(--morph-muted)}
+.morph-timeline li.undone .dot{background:var(--morph-series-2)}
+.morph-timeline .sub{font-size:12px;color:var(--morph-muted)}
+@keyframes morph-fade{from{opacity:0}}
+@keyframes morph-slide{from{transform:translateX(24px);opacity:.6}}
+@media (max-width:620px){.morph-drill{width:100%}.morph-record-actrow{grid-template-columns:1fr auto}.morph-record-actrow label{grid-column:1/-1}}
 @media (prefers-reduced-motion:reduce){.morph-root *,.morph-toast,.morph-skel{animation:none!important;transition:none!important}}
 `;
 
